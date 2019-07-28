@@ -50,6 +50,7 @@ func ListSingleClusterNodes(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingl
 		return NilHumanSingleClusterNodeList, err
 	}
 	err = json.Unmarshal(data, &nodelist)
+
 	if err != nil {
 		return NilHumanSingleClusterNodeList, err
 	}
@@ -93,11 +94,11 @@ func NodeDetail(items []node, healthynodestatus, unhealthynodestatus map[string]
 	for _, v2 := range items {
 		for _, v3 := range v2.Status.Conditions {
 			if v3.Type == "Ready" {
-				if v3.Status == "true" {
-					healthynodestatus[v2.Metadata.Name] = "true"
+				if v3.Status == "True" {
+					healthynodestatus[v2.Metadata.Name] = "True"
 					*x++
 				} else {
-					unhealthynodestatus[v2.Metadata.Name] = "false"
+					unhealthynodestatus[v2.Metadata.Name] = "False"
 					*y++
 				}
 			}
