@@ -10,6 +10,7 @@ import (
 // NodeViews is api of return node number and status
 func NodeViews(w http.ResponseWriter, r *http.Request) {
 	cluster := r.FormValue("cluster")
+	log.Println(store.StoreAllClusterNodeList)
 	tmp := store.StoreAllClusterNodeList[cluster]
 	data2, err := json.Marshal(tmp)
 	if err != nil {
