@@ -92,7 +92,9 @@ func (its *Request) Watch(cluster string, chandata map[string][]byte) {
 		if n == 0 && err != nil {
 			break
 		}
+		log.Println(buf[:n])
 		chandata[cluster] = buf[:n]
+		log.Println(chandata[cluster])
 		its.Chan <- ChanData
 	}
 }

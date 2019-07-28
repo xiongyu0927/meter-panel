@@ -37,7 +37,6 @@ func init() {
 	go func() {
 		for {
 			tmp := <-k8s.K8sRequest.Chan
-			log.Println(tmp)
 			nodedetail := make(map[string]string)
 			for k, v := range tmp {
 				err := json.Unmarshal(v, &event)
