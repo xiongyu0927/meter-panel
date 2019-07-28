@@ -57,6 +57,8 @@ func ListSingleClusterNodes(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingl
 	}
 
 	var x, y *int
+	x = new(int)
+	y = new(int)
 	NodeDetail(nodelist.Items, healthynodestatus, unhealthynodestatus, x, y)
 	// if over imit shuold parse again
 	if nodelist.Metadata.Continue != "" {

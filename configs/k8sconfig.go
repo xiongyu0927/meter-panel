@@ -2,7 +2,6 @@ package configs
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"meter-panel/tools"
 	"strings"
@@ -42,7 +41,6 @@ func GetK8SCoinfg() (HumanAllK8SConfigs, error) {
 
 	for _, v := range k8sconfig {
 		endpoint := strings.SplitN(v.Attr.Kubernetes.Endpoint, "//", -1)[1]
-		fmt.Println("hey " + endpoint)
 		var tmp = HumanSingleK8sConfigs{
 			EndPoint: endpoint,
 			Token:    v.Attr.Kubernetes.Token,
