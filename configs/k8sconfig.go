@@ -36,13 +36,13 @@ func GetK8SCoinfg() (HumanAllK8SConfigs, error) {
 
 	var k8sconfig []K8sconfigs
 	err = json.Unmarshal(data, &k8sconfig)
-	fmt.Println(k8sconfig)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, v := range k8sconfig {
-		endpoint := strings.SplitN(v.Attr.Kubernetes.Endpoint, "", -1)[1]
+		endpoint := strings.SplitN(v.Attr.Kubernetes.Endpoint, "//", -1)[1]
+		fmt.Println("hey " + endpoint)
 		var tmp = HumanSingleK8sConfigs{
 			EndPoint: endpoint,
 			Token:    v.Attr.Kubernetes.Token,
