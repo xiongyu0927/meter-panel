@@ -9,7 +9,7 @@ import (
 var (
 	nodelist SingleClusterNodeList
 	// HumanAllClusterNodeList is a map, key is cluster name, value is all node of this cluster
-	_HumanAllClusterNodeList HumanAllClusterNodeList
+	_HumanAllClusterNodeList HumanAllClusterNodeList = make(map[string]HumanSingleClusterNodeList)
 	// NilHumanSingleClusterNodeList is used return a nil value that type of HumanSingleClusterNodeList
 	NilHumanSingleClusterNodeList HumanSingleClusterNodeList
 	healthynodestatus             = make(map[string]string)
