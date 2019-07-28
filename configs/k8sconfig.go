@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"meter-panel/tools"
+	"strings"
 )
 
 // AllK8SConfigs is a map, key is cluster name, value is a struct that include k8s EndPoint and BearToken
@@ -41,8 +42,9 @@ func GetK8SCoinfg() (HumanAllK8SConfigs, error) {
 	}
 
 	for _, v := range k8sconfig {
+		endpoint := strings.SplitN(v.Attr.Kubernetes.Endpoint, "", -1)[1]
 		var tmp = HumanSingleK8sConfigs{
-			EndPoint: v.Attr.Kubernetes.Endpoint,
+			EndPoint: endpoint,
 			Token:    v.Attr.Kubernetes.Token,
 		}
 		AllK8SConfigs[v.Name] = tmp
