@@ -12,8 +12,6 @@ var (
 	_HumanAllClusterNodeList HumanAllClusterNodeList = make(map[string]HumanSingleClusterNodeList)
 	// NilHumanSingleClusterNodeList is used return a nil value that type of HumanSingleClusterNodeList
 	NilHumanSingleClusterNodeList HumanSingleClusterNodeList
-	healthynodestatus             = make(map[string]string)
-	unhealthynodestatus           = make(map[string]string)
 	// NodeChan is used Transport the k8s events
 	NodeChan = make(chan map[string][]byte, 30)
 	// ChanData is define the data type in the chan
@@ -55,7 +53,8 @@ func ListSingleClusterNodes(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingl
 	if err != nil {
 		return NilHumanSingleClusterNodeList, err
 	}
-
+	healthynodestatus := make(map[string]string)
+	unhealthynodestatus := make(map[string]string)
 	var x, y *int
 	x = new(int)
 	y = new(int)
