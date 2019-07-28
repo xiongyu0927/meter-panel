@@ -8,7 +8,7 @@ import (
 )
 
 // AllK8SConfigs is a map, key is cluster name, value is a struct that include k8s EndPoint and BearToken
-var AllK8SConfigs HumanAllK8SConfigs
+var AllK8SConfigs HumanAllK8SConfigs = make(map[string]HumanSingleK8sConfigs)
 
 // GetK8SCoinfg is used get a all k8s cluster config
 func GetK8SCoinfg() (HumanAllK8SConfigs, error) {
