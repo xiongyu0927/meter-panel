@@ -9,5 +9,6 @@ import (
 var Mux *http.ServeMux = http.NewServeMux()
 
 func init() {
+	// parmeter requierd cluster name string
 	Mux.HandleFunc("/api/v1/k8s/node", controllers.NodeViews)
 }

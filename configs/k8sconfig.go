@@ -16,7 +16,7 @@ func GetK8SCoinfg() (HumanAllK8SConfigs, error) {
 		Host:    "furion:8080",
 		Path:    "/v1/regions",
 		//IsHttps shuold be https or http
-		IsHTTPS:   "https",
+		IsHTTPS:   "http",
 		BearToken: "",
 	}
 
