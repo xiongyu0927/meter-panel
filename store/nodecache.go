@@ -41,6 +41,7 @@ func init() {
 			for k, v := range tmp {
 				err := json.Unmarshal(v, &event)
 				if err != nil {
+					log.Println("there is a error?")
 					log.Println(err)
 				}
 				switch event.Type {
