@@ -93,7 +93,7 @@ func (its *Request) Watch(cluster string, chandata map[string][]byte) {
 			break
 		}
 		chandata[cluster] = buf[:n]
-		log.Println(ChanData)
-		its.Chan <- ChanData
+		log.Println(chandata)
+		its.Chan <- chandata
 	}
 }
