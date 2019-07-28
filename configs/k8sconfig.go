@@ -2,6 +2,7 @@ package configs
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"meter-panel/tools"
 )
@@ -34,6 +35,7 @@ func GetK8SCoinfg() (HumanAllK8SConfigs, error) {
 
 	var k8sconfig []K8sconfigs
 	err = json.Unmarshal(data, &k8sconfig)
+	fmt.Println(k8sconfig)
 	if err != nil {
 		return nil, err
 	}
