@@ -16,7 +16,7 @@ var (
 	// NilHumanSingleClusterNodeList is used return a nil value that type of HumanSingleClusterNodeList
 	NilHumanSingleClusterNodeList HumanSingleClusterNodeList
 	// NodeChan is used Transport the k8s events
-	NodeChan = make(chan map[string]interface{}, 30)
+	K8SChan = make(chan map[string]interface{}, 30)
 	// ChanData is define the data type in the chan
 	ChanData = make(map[string]interface{})
 	// K8sRequest is used send the request to the k8s cluster
@@ -27,7 +27,6 @@ var (
 		//IsHttps shuold be https or http
 		IsHTTPS:   "https",
 		BearToken: "",
-		Chan:      NodeChan,
 	}
 )
 
@@ -161,6 +160,6 @@ func Watch(cluster string, chandata map[string]interface{}, its tools.Request) {
 			log.Println(err)
 		}
 		chandata[cluster] = a
-		its.Chan <- chandata
+		K8SChan <- chandata
 	}
 }

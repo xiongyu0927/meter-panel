@@ -34,7 +34,7 @@ func init() {
 	nodedetail := make(map[string]string)
 	go func() {
 		for {
-			tmp := <-k8s.K8sRequest.Chan
+			tmp := <-k8s.K8SChan
 			for k, v := range tmp {
 				// k was cluster name
 				// 处理序列化后的数据

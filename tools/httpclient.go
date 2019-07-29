@@ -14,8 +14,6 @@ type Request struct {
 	// IsHttps shuold be https or http
 	IsHTTPS   string
 	BearToken string
-	// Chan is used Transport k8s events when watching the api
-	Chan chan map[string]interface{}
 }
 
 // tr is InsecureSkipVerify
