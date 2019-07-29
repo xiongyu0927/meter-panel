@@ -1,7 +1,6 @@
 package store
 
 import (
-	"encoding/json"
 	"log"
 	"meter-panel/configs"
 	k8s "meter-panel/pkg/api/v1/k8s"
@@ -33,27 +32,22 @@ func init() {
 }
 
 func init() {
-	var event k8s.NodeEvents
+	nodedetail := make(map[string]string)
 	go func() {
 		for {
 			tmp := <-k8s.K8sRequest.Chan
-			nodedetail := make(map[string]string)
 			for k, v := range tmp {
-				err := json.Unmarshal(v, &event)
-				if err != nil {
-					log.Println("there is a error?")
-					log.Println(err)
-				}
-				switch event.Type {
-				case "MODIFIED":
-					nodename := event.Object.Metadata.Name
-					for _, v := range event.Object.Status.Conditions {
-						if v.Type == "Ready" {
-							nodedetail[nodename] = v.Status
+				// k was cluster name
+				// 处理序列化后的数据
+				switch x := v.(type) {
+				case k8s.NodeEvents:
+					nodename := x.Object.Metadata.Name
+					for _, v2 := range x.Object.Status.Conditions {
+						if v2.Type == "Ready" {
+							nodedetail[nodename] = v2.Status
 						}
 					}
 					Modifyed(k, nodedetail, nodename)
-					// case ""：
 				}
 			}
 		}
