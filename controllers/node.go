@@ -11,7 +11,7 @@ import (
 func NodeViews(w http.ResponseWriter, r *http.Request) {
 	cluster := r.FormValue("cluster")
 	log.Println(store.StoreAllClusterNodeList)
-	tmp := store.StoreAllClusterNodeList[cluster]
+	tmp := store.GetSingleClusterNodeList(cluster)
 	data2, err := json.Marshal(tmp)
 	if err != nil {
 		log.Println(err)

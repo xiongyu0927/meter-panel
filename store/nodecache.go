@@ -47,7 +47,7 @@ func init() {
 							nodedetail[nodename] = v2.Status
 						}
 					}
-					Modifyed(k, nodedetail, nodename)
+					NodeModifyed(k, nodedetail, nodename)
 				}
 			}
 		}
@@ -56,26 +56,26 @@ func init() {
 
 // GetSingleClusterNodeList is used query node info of a cluster
 // when a new cluster create in furion, this function can refresh the info of cluster
-func (its *NodeCache) GetSingleClusterNodeList(cluster string) k8s.HumanSingleClusterNodeList {
-	singlek8sconfig := StoreAllK8SConfigs.GetSingleK8SConfigs(cluster)
-	data := its.StoreAllClusterNodeList[cluster]
+func GetSingleClusterNodeList(cluster string) k8s.HumanSingleClusterNodeList {
+	data := StoreAllClusterNodeList[cluster]
 	if !reflect.DeepEqual(data, NilSingleClusterNodeList) {
 		return data
 	}
+	singlek8sconfig := StoreAllK8SConfigs.GetSingleK8SConfigs(cluster)
 	tmp, err := k8s.ListSingleClusterNodes(singlek8sconfig)
 	if err != nil {
 		log.Println(err)
 	}
-	its.StoreAllClusterNodeList[cluster] = tmp
+	StoreAllClusterNodeList[cluster] = tmp
 	log.Println(cluster + " is seted in nodecache")
 	return tmp
 }
 
 // Modifyed is used when node event type is Modifyed
-func Modifyed(cluster string, nodedetail map[string]string, nodename string) {
+func NodeModifyed(cluster string, nodedetail map[string]string, nodename string) {
 	if StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus[nodename] == "" {
 		if StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] == nodedetail[nodename] {
-			log.Println("the node status of cluster " + cluster + " doesn't has changed")
+			// log.Println("the node status of cluster " + cluster + " doesn't has changed")
 		} else {
 			delete(StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus, nodename)
 			StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
@@ -84,7 +84,7 @@ func Modifyed(cluster string, nodedetail map[string]string, nodename string) {
 		}
 	} else {
 		if StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus[nodename] == nodedetail[nodename] {
-			log.Println("the node status of cluster " + cluster + " doesn't has changed")
+			// log.Println("the node status of cluster " + cluster + " doesn't has changed")
 		} else {
 			delete(StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus, nodename)
 			StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
