@@ -37,7 +37,7 @@ func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 
 	if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == NilK8SPod {
 		if StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus[podname] == poddetail[podname] {
-			log.Println("the Pod status of cluster " + cluster + " doesn't has changed")
+			// log.Println("the Pod status of cluster " + cluster + " doesn't has changed")
 		} else {
 			delete(StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus, podname)
 			StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] = poddetail[podname]
@@ -47,7 +47,7 @@ func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 		}
 	} else {
 		if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == poddetail[podname] {
-			log.Println("the Pod status of cluster " + cluster + " doesn't has changed")
+			// log.Println("the Pod status of cluster " + cluster + " doesn't has changed")
 		} else {
 			delete(StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus, podname)
 			StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus[podname] = poddetail[podname]
