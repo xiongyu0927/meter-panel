@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
+	"meter-panel/routers"
 	"net/http"
-	"nsxt-go/routers"
 )
 
 func main() {
