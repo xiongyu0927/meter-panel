@@ -1,17 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+	"nsxt-go/routers"
+)
 
 func main() {
-	test("A")
-}
-
-func test(ss string) {
-	if ss == "A" {
-		var x int
+	err := http.ListenAndServe(":12300", routers.Mux)
+	if err != nil {
+		log.Fatal(err)
 	}
-	if ss == "B" {
-		var x string
-	}
-	fmt.Println(x)
 }
