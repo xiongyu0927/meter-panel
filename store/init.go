@@ -11,8 +11,11 @@ var (
 	StoreAllClusterNodeList k8s.HumanAllClusterNodeList
 	// StoreAllK8SConfigs is used save all cluster configs in the memory
 	StoreAllK8SConfigs configs.HumanAllK8SConfigs
+	// StoreAllClusterPodslist is used save all cluster pod list in the meeory
+	StoreAllClusterPodList k8s.HumanAllClusterPodsList
 	// NilSingleClusterNodeList is used return nil value of HumanSingleClusterNodeList
 	NilSingleClusterNodeList k8s.HumanSingleClusterNodeList
+	NilSlingeClusterPodList  k8s.HumanSingleClusterApplicationsList
 	err                      error
 )
 
@@ -27,17 +30,22 @@ func init() {
 		log.Println(err)
 	}
 
-	k8s.WatchAllClusterNodes(StoreAllK8SConfigs)
+	StoreAllClusterPodList, err = k8s.ListAllClusterPods(StoreAllK8SConfigs)
+	if err != nil {
+		log.Println(err)
+	}
+
+	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "nodes")
+	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "pods")
 }
 
 func init() {
 	nodedetail := make(map[string]string)
+	poddetail := make(map[string]k8s.Pod)
 	go func() {
 		for {
 			tmp := <-k8s.K8SChan
 			for k, v := range tmp {
-				// k was cluster name
-				// 处理序列化后的数据
 				switch x := v.(type) {
 				case k8s.NodeEvents:
 					nodename := x.Object.Metadata.Name
@@ -47,6 +55,14 @@ func init() {
 						}
 					}
 					NodeModifyed(k, nodedetail, nodename)
+				case k8s.PodEvents:
+					podname := x.Object.Metadata.Name
+					poddetail[podname] = k8s.Pod{
+						Status:       x.Object.Status.Phase,
+						Service_name: x.Object.Metadata.Labels.Service_name,
+						Apps:         x.Object.Metadata.Labels.Apps,
+					}
+					PodModifyed(k, poddetail, podname)
 				}
 			}
 		}

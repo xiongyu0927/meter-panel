@@ -1,14 +1,17 @@
 package main
 
-import (
-	"log"
-	"meter-panel/routers"
-	"net/http"
-)
+import "fmt"
 
 func main() {
-	err := http.ListenAndServe(":12300", routers.Mux)
-	if err != nil {
-		log.Fatal(err)
+	test("A")
+}
+
+func test(ss string) {
+	if ss == "A" {
+		var x int
 	}
+	if ss == "B" {
+		var x string
+	}
+	fmt.Println(x)
 }
