@@ -30,8 +30,10 @@ func NodeModifyed(cluster string, nodedetail map[string]string, nodename string)
 		StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] == "" {
 		if nodedetail[nodename] == "True" {
 			StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
+			*StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.Number++
 		} else {
 			StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
+			*StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.Number++
 		}
 	}
 
@@ -43,6 +45,7 @@ func NodeModifyed(cluster string, nodedetail map[string]string, nodename string)
 			delete(StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus, nodename)
 			StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
 			*StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.Number--
+			*StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.Number++
 			log.Println("the node status cluster " + cluster + "was changed")
 		}
 	} else {
@@ -51,7 +54,8 @@ func NodeModifyed(cluster string, nodedetail map[string]string, nodename string)
 		} else {
 			delete(StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus, nodename)
 			StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
-			*StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.Number--
+			*StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.Number--
+			*StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.Number++
 			log.Println("the node status cluster " + cluster + "was changed")
 		}
 	}
