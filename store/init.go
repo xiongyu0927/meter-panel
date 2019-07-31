@@ -56,7 +56,6 @@ func init() {
 					}
 					NodeModifyed(k, nodedetail, nodename)
 				case k8s.PodEvents:
-					log.Println(x)
 					eventtype := x.Type
 					podname := x.Object.Metadata.Name
 					poddetail[podname] = k8s.Pod{
