@@ -27,14 +27,14 @@ func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 	// delete pods
 	if eventtype == "DELETE" {
 		if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == NilK8SPod {
-			delete(StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus, podname)
-			*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number--
-			log.Println("delete a healthy pods " + podname + " in " + cluster)
+			delete(StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus, podname)
+			*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number--
+			log.Println("delete a unhealthy pods " + podname + " in " + cluster)
 			return
 		}
-		delete(StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus, podname)
-		*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number--
-		log.Println("delete a unhealthy pods " + podname + " in " + cluster)
+		delete(StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus, podname)
+		*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number--
+		log.Println("delete a healthy pods " + podname + " in " + cluster)
 		return
 	}
 
@@ -53,27 +53,25 @@ func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 	}
 
 	// change pod
-	if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == NilK8SPod {
-		if StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus[podname] == poddetail[podname] {
-			// log.Println("the Pod status of cluster " + cluster + " doesn't has changed")
-		} else {
-			delete(StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus, podname)
-			StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] = poddetail[podname]
-			*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number--
-			*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number++
-			log.Println("change a unhealthy pod " + podname + "to healthy in " + cluster)
-			return
-		}
-	} else {
-		if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == poddetail[podname] {
-			// log.Println("the Pod status of cluster " + cluster + " doesn't has changed")
-		} else {
-			delete(StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus, podname)
-			StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus[podname] = poddetail[podname]
-			*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number--
-			*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number++
-			log.Println("change a healthy pod " + podname + "to unhealthy in " + cluster)
-			return
-		}
+	if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == NilK8SPod &&
+		poddetail[podname].Status == "Running" || poddetail[podname].Status == "Succeeded" {
+		// log.Println("the Pod status of cluster " + cluster + " doesn't has changed")
+		delete(StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus, podname)
+		StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] = poddetail[podname]
+		*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number--
+		*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number++
+		log.Println("change a unhealthy pod " + podname + "to healthy in " + cluster)
+		return
+	}
+
+	if StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus[podname] == NilK8SPod &&
+		poddetail[podname].Status != "Running" || poddetail[podname].Status != "Succeeded" {
+		// log.Println("the Pod status of cluster " + cluster + " doesn't has changed")
+		delete(StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus, podname)
+		StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus[podname] = poddetail[podname]
+		*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number--
+		*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number++
+		log.Println("change a healthy pod " + podname + "to unhealthy in " + cluster)
+		return
 	}
 }
