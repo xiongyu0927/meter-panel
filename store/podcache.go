@@ -25,7 +25,7 @@ func GetSingleClusterPodsList(cluster string) k8s.HumanSingleClusterPodsList {
 
 func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, eventtype string) {
 	// delete pods
-	if eventtype == "DELETE" {
+	if eventtype == "DELETED" {
 		if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == NilK8SPod {
 			delete(StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus, podname)
 			*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number--
