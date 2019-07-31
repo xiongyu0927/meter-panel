@@ -29,11 +29,13 @@ func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 		if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == NilK8SPod {
 			delete(StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus, podname)
 			*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number--
+			*StoreAllClusterPodList[cluster].SingleClusterPodsNumber--
 			log.Println("delete a unhealthy pods " + podname + " in " + cluster)
 			return
 		}
 		delete(StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus, podname)
 		*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number--
+		*StoreAllClusterPodList[cluster].SingleClusterPodsNumber--
 		log.Println("delete a healthy pods " + podname + " in " + cluster)
 		return
 	}
@@ -44,11 +46,13 @@ func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 		if poddetail[podname].Status == "Running" || poddetail[podname].Status == "Succeeded" {
 			StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] = poddetail[podname]
 			*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number++
+			*StoreAllClusterPodList[cluster].SingleClusterPodsNumber++
 			log.Println("add a healthy pod " + podname + "in " + cluster)
 			return
 		}
 		StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus[podname] = poddetail[podname]
 		*StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.Number++
+		*StoreAllClusterPodList[cluster].SingleClusterPodsNumber++
 		return
 	}
 
