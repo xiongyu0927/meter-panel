@@ -79,7 +79,7 @@ type condition struct {
 
 // PodEvents is used for pare json fron single k8s pods watch api
 type PodEvents struct {
-	Tyep   string
+	Type   string
 	Object object
 }
 

@@ -12,7 +12,7 @@ import (
 // WatchAllClusterNodes is used watch all cluster k8s node events
 func WatchAllClusterResource(k8sconfigs configs.HumanAllK8SConfigs, resourece string) {
 	for k, v1 := range k8sconfigs {
-		go WatchSingleClusterResource(k, v1, resourece)
+		WatchSingleClusterResource(k, v1, resourece)
 	}
 }
 
@@ -27,7 +27,7 @@ func WatchSingleClusterResource(cluster string, k8sconfig configs.HumanSingleK8s
 		K8sRequest.Path = "/api/v1/watch/pods"
 	}
 
-	Watch(cluster, K8sRequest, resource)
+	go Watch(cluster, K8sRequest, resource)
 }
 
 // Watch is used to watch k8s resource
