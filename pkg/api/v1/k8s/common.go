@@ -72,17 +72,17 @@ func DecodeJson(cluster string, resp *http.Response, chandata map[string]interfa
 		for {
 			err := json.NewDecoder(resp.Body).Decode(&a)
 			if err != nil {
-				log.Println("node also have probe")
+				log.Println(err)
 			}
 			chandata[cluster] = a
 			K8SChan <- chandata
 		}
 	case "pods":
 		for {
-			err := json.NewDecoder(resp.Body).Decode(&b)
-			if err != nil {
-				log.Println(err)
-			}
+			_ = json.NewDecoder(resp.Body).Decode(&b)
+			// if err != nil {
+			// 	log.Println(err)
+			// }
 			chandata[cluster] = b
 			K8SChan <- chandata
 		}
