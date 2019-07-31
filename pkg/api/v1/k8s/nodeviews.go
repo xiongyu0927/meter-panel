@@ -17,7 +17,6 @@ var (
 	// NodeChan is used Transport the k8s events
 	K8SChan = make(chan map[string]interface{}, 30)
 	// ChanData is define the data type in the chan
-	ChanData = make(map[string]interface{})
 	// K8sRequest is used send the request to the k8s cluster
 	K8sRequest = tools.Request{
 		Methoud: "GET",
