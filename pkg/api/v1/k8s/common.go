@@ -84,7 +84,7 @@ func DecodeJson(cluster string, resp *http.Response, chandata map[string]interfa
 			// 	log.Println(err)
 			// }
 			chandata[cluster] = b
-			log.Panicln(chandata)
+			log.Println(chandata)
 			K8SChan <- chandata
 		}
 	}
