@@ -25,19 +25,20 @@ func GetSingleClusterNodeList(cluster string) k8s.HumanSingleClusterNodeList {
 
 // NodeModifyed is used when node event type is Modifyed
 func NodeModifyed(cluster string, nodedetail map[string]string, nodename string) {
-	// if new node
+	// add new node
 	if StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus[nodename] == "" &&
 		StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] == "" {
 		if nodedetail[nodename] == "True" {
 			StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
 			*StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.Number++
-		} else {
-			StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
-			*StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.Number++
+			return
 		}
+		StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] = nodedetail[nodename]
+		*StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.Number++
+		return
 	}
 
-	// donot have new node
+	// change node
 	if StoreAllClusterNodeList[cluster].SingleClusterHealthyNode.NodeStatus[nodename] == "" {
 		if StoreAllClusterNodeList[cluster].SingleClusterUnHealthyNode.NodeStatus[nodename] == nodedetail[nodename] {
 			// log.Println("the node status of cluster " + cluster + " doesn't has changed")

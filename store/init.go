@@ -56,13 +56,14 @@ func init() {
 					}
 					NodeModifyed(k, nodedetail, nodename)
 				case k8s.PodEvents:
+					eventtype := x.Type
 					podname := x.Object.Metadata.Name
 					poddetail[podname] = k8s.Pod{
 						Status:       x.Object.Status.Phase,
 						Service_name: x.Object.Metadata.Labels.Service_name,
 						Apps:         x.Object.Metadata.Labels.Apps,
 					}
-					PodModifyed(k, poddetail, podname)
+					PodModifyed(k, poddetail, podname, eventtype)
 				}
 			}
 		}
