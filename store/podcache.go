@@ -39,7 +39,7 @@ func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 	// add pods
 	if StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] == NilK8SPod &&
 		StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus[podname] == NilK8SPod {
-		if poddetail[podname].Status == "Running" {
+		if poddetail[podname].Status == "Running" || poddetail[podname].Status == "Succeeded" {
 			StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus[podname] = poddetail[podname]
 			*StoreAllClusterPodList[cluster].SingleClusterHealthyPods.Number++
 			return

@@ -73,7 +73,7 @@ func ListSingleClusterPods(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingle
 
 func PodsDetail(items []pod, healthypodstatus, unhealthypodstatus map[string]Pod) {
 	for _, v2 := range items {
-		if v2.Status.Phase != "Running" {
+		if v2.Status.Phase != "Running" && v2.Status.Phase != "Succeeded" {
 			unhealthypodstatus[v2.Metadata.Name] = Pod{
 				Status:       v2.Status.Phase,
 				Service_name: v2.Metadata.Labels.Service_name,

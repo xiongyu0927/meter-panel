@@ -36,7 +36,7 @@ func init() {
 	}
 
 	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "nodes")
-	// k8s.WatchAllClusterResource(StoreAllK8SConfigs, "pods")
+	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "pods")
 }
 
 func init() {
