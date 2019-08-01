@@ -44,14 +44,13 @@ func init() {
 }
 
 func init() {
-	nodedetail := make(map[string]string)
-	poddetail := make(map[string]k8s.Pod)
 	go func() {
 		for {
 			tmp := <-k8s.K8SChan
 			for k, v := range tmp {
 				switch x := v.(type) {
 				case k8s.NodeEvents:
+					nodedetail := make(map[string]string)
 					nodename := x.Object.Metadata.Name
 					for _, v2 := range x.Object.Status.Conditions {
 						if v2.Type == "Ready" {
@@ -60,6 +59,7 @@ func init() {
 					}
 					NodeModifyed(k, nodedetail, nodename)
 				case k8s.PodEvents:
+					poddetail := make(map[string]k8s.Pod)
 					eventtype := x.Type
 					podname := x.Object.Metadata.Name
 					poddetail[podname] = k8s.Pod{
