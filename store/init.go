@@ -68,7 +68,7 @@ func init() {
 						Apps:         x.Object.Metadata.Labels.Apps,
 					}
 					PodModifyed(k, poddetail, podname, eventtype)
-					AppModifyed(k, poddetail, podname, eventtype)
+					// AppModifyed(k, poddetail, podname, eventtype)
 				}
 			}
 		}
