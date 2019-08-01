@@ -2,7 +2,7 @@ package k8s
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"meter-panel/configs"
 )
 
@@ -53,6 +53,7 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 		AppsDetail(applist.Items, healthyappstatus, unhealthyappstatus, oneclusterpods)
 	}
 
+	log.Println(healthyappstatus)
 	x := len(healthyappstatus)
 	y := len(unhealthyappstatus)
 	z := x + y
@@ -68,7 +69,6 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 		SingleClusterAppNumber: &z,
 	}
 
-	fmt.Println(tmp2)
 	return tmp2, nil
 }
 
