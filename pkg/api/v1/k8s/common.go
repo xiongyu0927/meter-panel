@@ -86,7 +86,6 @@ func DecodeJson(cluster string, resp *http.Response, resource string) {
 			// 	log.Println(err)
 			// }
 			chandata[cluster] = b
-			log.Println(chandata)
 			K8SChan <- chandata
 		}
 	}

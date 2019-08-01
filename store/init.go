@@ -11,8 +11,10 @@ var (
 	StoreAllClusterNodeList k8s.HumanAllClusterNodeList
 	// StoreAllK8SConfigs is used save all cluster configs in the memory
 	StoreAllK8SConfigs configs.HumanAllK8SConfigs
-	// StoreAllClusterPodslist is used save all cluster pod list in the meeory
+	// StoreAllClusterPodslist is used save all cluster pod list in the memory
 	StoreAllClusterPodList k8s.HumanAllClusterPodsList
+	// StoreAllClusterAppList is used save all cluster app list in the memory
+	StoreAllClusterAppList k8s.HumanAllClusterApplicationsList
 	// NilSingleClusterNodeList is used return nil value of HumanSingleClusterNodeList
 	NilSingleClusterNodeList k8s.HumanSingleClusterNodeList
 	NilSlingeClusterPodList  k8s.HumanSingleClusterApplicationsList
@@ -34,6 +36,8 @@ func init() {
 	if err != nil {
 		log.Println(err)
 	}
+
+	StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
 
 	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "nodes")
 	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "pods")
@@ -64,6 +68,7 @@ func init() {
 						Apps:         x.Object.Metadata.Labels.Apps,
 					}
 					PodModifyed(k, poddetail, podname, eventtype)
+					AppModifyed(k, poddetail, podname, eventtype)
 				}
 			}
 		}

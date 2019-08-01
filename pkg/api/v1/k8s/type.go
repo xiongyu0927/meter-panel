@@ -45,7 +45,7 @@ type spec struct {
 }
 
 type selector struct {
-	MatchLabels interface{} `json:"matchLabels"`
+	MatchLabels labels `json:"matchLabels"`
 }
 
 type continuee struct {
@@ -107,18 +107,18 @@ type unhealthynode struct {
 }
 
 type HumanSingleClusterApplicationsList struct {
-	SingleClusterHealthyApp    healthyapp
-	SingleClusterUnHealthyNode unhealthyapp
-	SingleClusterAppNumber     *int
+	SingleClusterHealthyApp   healthyapp
+	SingleClusterUnHealthyApp unhealthyapp
+	SingleClusterAppNumber    *int
 }
 
 type healthyapp struct {
-	AppStatus map[string]string
+	AppStatus map[string]Pod
 	Number    *int
 }
 
 type unhealthyapp struct {
-	AppStatus map[string]string
+	AppStatus map[string]Pod
 	Number    *int
 }
 
