@@ -53,7 +53,6 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 		AppsDetail(applist.Items, healthyappstatus, unhealthyappstatus, oneclusterpods)
 	}
 
-	log.Println(healthyappstatus)
 	x := len(healthyappstatus)
 	y := len(unhealthyappstatus)
 	z := x + y
@@ -93,6 +92,7 @@ func AppsDetail(items []app, healthyappstatus, unhealthyappstatus map[string]Pod
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
 				}
+				log.Println(healthyappstatus)
 				return
 			}
 			healthyappstatus[v.Metadata.Name] = Pod{
