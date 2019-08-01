@@ -33,7 +33,7 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 			if Appplace == NilK8SPod {
 				// 新增带label的pod，Application也无法获取只能重新list一遍
 				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
-				log.Println("List a app, maybe have new app delete or add")
+				log.Println("List a app, maybe have new app add")
 			}
 			modifyapp(Appplace, cluster, place, Appname)
 		} else {
