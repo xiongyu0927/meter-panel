@@ -32,7 +32,6 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 		return NilHumanSingleClusterAppList, err
 	}
 	err = json.Unmarshal(data, &applist)
-	fmt.Println(applist)
 	if err != nil {
 		return NilHumanSingleClusterAppList, err
 	}
@@ -47,7 +46,7 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 		if err != nil {
 			return NilHumanSingleClusterAppList, err
 		}
-		err = json.Unmarshal(data, &podslist)
+		err = json.Unmarshal(data, &applist)
 		if err != nil {
 			return NilHumanSingleClusterAppList, err
 		}
@@ -69,6 +68,7 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 		SingleClusterAppNumber: &z,
 	}
 
+	fmt.Println(tmp2)
 	return tmp2, nil
 }
 
