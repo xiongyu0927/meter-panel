@@ -73,8 +73,8 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 
 func AppsDetail(items []app, healthyappstatus, unhealthyappstatus map[string]Pod, oneclusterpods HumanSingleClusterPodsList) {
 	for _, v := range items {
-
 		for _, v1 := range oneclusterpods.SingleClusterUnHealthyPods.PodStatus {
+			log.Println(v.Spec.Selector.MatchLabels.Apps == v1.Apps || v.Spec.Selector.MatchLabels.Service_name == v1.Service_name)
 			if v.Spec.Selector.MatchLabels.Apps == v1.Apps || v.Spec.Selector.MatchLabels.Service_name == v1.Service_name {
 				unhealthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Processing",
