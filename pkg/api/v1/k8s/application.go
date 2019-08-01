@@ -35,7 +35,6 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 	if err != nil {
 		return NilHumanSingleClusterAppList, err
 	}
-	log.Println(applist.Items)
 	// 处理数据得到一个人类的Application
 	healthyappstatus := make(map[string]Pod, 40)
 	unhealthyappstatus := make(map[string]Pod, 40)
@@ -75,9 +74,17 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 func AppsDetail(items []app, healthyappstatus, unhealthyappstatus map[string]Pod, oneclusterpods HumanSingleClusterPodsList) {
 LABEL1:
 	for _, v := range items {
-		log.Println(v.Spec.Selector.MatchLabels.Apps + "he" + v.Spec.Selector.MatchLabels.Service_name)
 		for _, v1 := range oneclusterpods.SingleClusterUnHealthyPods.PodStatus {
-			if v.Spec.Selector.MatchLabels.Apps == v1.Apps || v.Spec.Selector.MatchLabels.Service_name == v1.Service_name {
+			if v.Spec.Selector.MatchLabels.Apps != "" && v.Spec.Selector.MatchLabels.Apps == v1.Apps {
+				unhealthyappstatus[v.Metadata.Name] = Pod{
+					Status:       "Processing",
+					Apps:         v.Spec.Selector.MatchLabels.Apps,
+					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+				}
+				continue LABEL1
+			}
+
+			if v.Spec.Selector.MatchLabels.Service_name != "" && v.Spec.Selector.MatchLabels.Service_name == v1.Service_name {
 				unhealthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Processing",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
