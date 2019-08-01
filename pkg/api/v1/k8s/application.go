@@ -2,7 +2,6 @@ package k8s
 
 import (
 	"encoding/json"
-	"log"
 	"meter-panel/configs"
 )
 
@@ -101,7 +100,6 @@ LABEL1:
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
 				}
-				log.Println("i'm here")
 				continue LABEL1
 			}
 			healthyappstatus[v.Metadata.Name] = Pod{

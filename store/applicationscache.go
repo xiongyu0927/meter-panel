@@ -41,7 +41,7 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 			if Appplace == NilK8SPod {
 				// 新增带label的pod，Application也无法获取只能重新list一遍
 				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
-				log.Println("List a app, maybe have new app delete or add")
+				log.Println("List a app, maybe have new app add")
 			}
 			modifyapp(Appplace, cluster, place, Appname)
 		}
@@ -96,6 +96,7 @@ func modifyapp(Appplace k8s.Pod, cluster string, place string, Appname string) {
 					Service_name: Appplace.Service_name,
 				}
 				*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number++
+				log.Println(Appname + "become unhealthy")
 				return
 			}
 		}
@@ -112,6 +113,7 @@ func modifyapp(Appplace k8s.Pod, cluster string, place string, Appname string) {
 					Service_name: Appplace.Service_name,
 				}
 				*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number++
+				log.Println(Appname + "become healthy")
 				return
 			}
 		}
@@ -119,6 +121,6 @@ func modifyapp(Appplace k8s.Pod, cluster string, place string, Appname string) {
 
 	// 根据pod的状态来判断application的状态，当pod为0时，无法知道application是停止了还是删除了，所以重新list一遍
 	StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
-	log.Println("List a app, maybe have new app delete or add")
+	log.Println("List a app, maybe have new app delete")
 	return
 }
