@@ -25,7 +25,7 @@ func GetSingleClusterAppsList(cluster string) k8s.HumanSingleClusterApplications
 
 func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, eventtype string) {
 
-	for _, v := range StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus {
+	for _, v := range StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus {
 		if poddetail[podname].Apps == v.Apps || poddetail[podname].Service_name == v.Service_name {
 			for _, v1 := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
 				if v.Apps == v1.Apps || v.Service_name == v1.Service_name {

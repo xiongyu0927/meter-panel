@@ -75,7 +75,6 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 func AppsDetail(items []app, healthyappstatus, unhealthyappstatus map[string]Pod, oneclusterpods HumanSingleClusterPodsList) {
 LABEL1:
 	for _, v := range items {
-		log.Println(v.Metadata.Name)
 		for _, v1 := range oneclusterpods.SingleClusterUnHealthyPods.PodStatus {
 			if v.Spec.Selector.MatchLabels.Apps == v1.Apps || v.Spec.Selector.MatchLabels.Service_name == v1.Service_name {
 				unhealthyappstatus[v.Metadata.Name] = Pod{
@@ -94,6 +93,7 @@ LABEL1:
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
 				}
+				log.Println("i'm here")
 				continue LABEL1
 			}
 			healthyappstatus[v.Metadata.Name] = Pod{
