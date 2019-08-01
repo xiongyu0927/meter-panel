@@ -67,7 +67,7 @@ func init() {
 						Service_name: x.Object.Metadata.Labels.Service_name,
 						Apps:         x.Object.Metadata.Labels.Apps,
 					}
-					log.Println(poddetail)
+					// log.Println(poddetail)
 					PodModifyed(k, poddetail, podname, eventtype)
 					AppModifyed(k, poddetail, podname, eventtype)
 				}
