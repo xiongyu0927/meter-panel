@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"encoding/json"
+	"fmt"
 	"meter-panel/configs"
 )
 
@@ -31,6 +32,7 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 		return NilHumanSingleClusterAppList, err
 	}
 	err = json.Unmarshal(data, &applist)
+	fmt.Println(applist)
 	if err != nil {
 		return NilHumanSingleClusterAppList, err
 	}
@@ -100,5 +102,4 @@ func AppsDetail(items []app, healthyappstatus, unhealthyappstatus map[string]Pod
 			}
 		}
 	}
-
 }
