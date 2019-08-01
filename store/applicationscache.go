@@ -28,6 +28,7 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 	if poddetail[podname].Apps != "" || poddetail[podname].Service_name != "" {
 		if poddetail[podname].Apps != "" {
 			thisL := poddetail[podname].Apps
+			log.Println(thisL)
 			Appplace, place, Appname := GetAppPlace(cluster, thisL, "A")
 			// log.Println(Appplace)
 			if Appplace == NilK8SPod {
