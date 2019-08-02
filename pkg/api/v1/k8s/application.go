@@ -2,7 +2,6 @@ package k8s
 
 import (
 	"encoding/json"
-	"log"
 	"meter-panel/configs"
 )
 
@@ -74,9 +73,10 @@ func ListSingleClusterApplications(k8sconfig configs.HumanSingleK8sConfigs, onec
 func AppsDetail(items []app, healthyappstatus, unhealthyappstatus map[string]Pod, oneclusterpods HumanSingleClusterPodsList) {
 LABEL1:
 	for _, v := range items {
+		// 处理中的
 		for _, v1 := range oneclusterpods.SingleClusterUnHealthyPods.PodStatus {
 			// 判断redis
-			if v.Spec.Selector.MatchLabels.Appredis != "" && v.Spec.Selector.MatchLabels.Apps == v1.Appredis {
+			if v.Spec.Selector.MatchLabels.Appredis != "" && v.Spec.Selector.MatchLabels.Appredis == v1.Appredis {
 				unhealthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Processing",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
@@ -106,11 +106,10 @@ LABEL1:
 				continue LABEL1
 			}
 		}
-
+		// Running的
 		for _, v2 := range oneclusterpods.SingleClusterHealthyPods.PodStatus {
 			// 判断redis
-			if v.Spec.Selector.MatchLabels.Appredis != "" && v.Spec.Selector.MatchLabels.Apps == v2.Appredis {
-				log.Println(v.Metadata.Name)
+			if v.Spec.Selector.MatchLabels.Appredis != "" && v.Spec.Selector.MatchLabels.Appredis == v2.Appredis {
 				healthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Running",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
@@ -129,9 +128,8 @@ LABEL1:
 				}
 				continue LABEL1
 			}
-
+			// 判断service_name类型的
 			if v.Spec.Selector.MatchLabels.Service_name != "" && v.Spec.Selector.MatchLabels.Service_name == v2.Service_name {
-				log.Println(v2.Service_name)
 				healthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Running",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
@@ -140,13 +138,13 @@ LABEL1:
 				}
 				continue LABEL1
 			}
-			// 判断service_name类型的
-			healthyappstatus[v.Metadata.Name] = Pod{
-				Status:       "Stop",
-				Apps:         v.Spec.Selector.MatchLabels.Apps,
-				Service_name: v.Spec.Selector.MatchLabels.Service_name,
-				Appredis:     v.Spec.Selector.MatchLabels.Appredis,
-			}
+		}
+		// STOP的
+		healthyappstatus[v.Metadata.Name] = Pod{
+			Status:       "Stop",
+			Apps:         v.Spec.Selector.MatchLabels.Apps,
+			Service_name: v.Spec.Selector.MatchLabels.Service_name,
+			Appredis:     v.Spec.Selector.MatchLabels.Appredis,
 		}
 	}
 }
