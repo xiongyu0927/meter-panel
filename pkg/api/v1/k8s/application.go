@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"encoding/json"
+	"log"
 	"meter-panel/configs"
 )
 
@@ -94,6 +95,8 @@ LABEL1:
 		}
 
 		for _, v2 := range oneclusterpods.SingleClusterHealthyPods.PodStatus {
+			log.Println("hi" + v.Spec.Selector.MatchLabels.Apps)
+			log.Println("hey" + v.Spec.Selector.MatchLabels.Service_name)
 			if v.Spec.Selector.MatchLabels.Apps != "" && v.Spec.Selector.MatchLabels.Apps == v2.Apps {
 				healthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Running",
@@ -111,6 +114,7 @@ LABEL1:
 				}
 				continue LABEL1
 			}
+
 			healthyappstatus[v.Metadata.Name] = Pod{
 				Status:       "Stop",
 				Apps:         v.Spec.Selector.MatchLabels.Apps,
