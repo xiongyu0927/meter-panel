@@ -56,6 +56,7 @@ type continuee struct {
 type labels struct {
 	Service_name string `json:"Service_name"`
 	Apps         string `json:"app.alauda.io/name"`
+	Appredis     string `json:"app_name"`
 }
 
 // NodeEvents is used for parse json from single k8s node watch api
@@ -144,6 +145,7 @@ type Pod struct {
 	PodIp        string
 	Service_name string `json:"Service_name"`
 	Apps         string `json:"app.alauda.io/name"`
+	Appredis     string `json:"app_name"`
 }
 
 // HumanAllClusterNodeList is used store all cluster's nodes

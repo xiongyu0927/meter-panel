@@ -75,6 +75,16 @@ func AppsDetail(items []app, healthyappstatus, unhealthyappstatus map[string]Pod
 LABEL1:
 	for _, v := range items {
 		for _, v1 := range oneclusterpods.SingleClusterUnHealthyPods.PodStatus {
+			// 判断redis
+			if v.Spec.Selector.MatchLabels.Appredis != "" && v.Spec.Selector.MatchLabels.Apps == v1.Appredis {
+				unhealthyappstatus[v.Metadata.Name] = Pod{
+					Status:       "Processing",
+					Apps:         v.Spec.Selector.MatchLabels.Apps,
+					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+				}
+				continue LABEL1
+			}
+			// 判断app.alauda.io类型的
 			if v.Spec.Selector.MatchLabels.Apps != "" && v.Spec.Selector.MatchLabels.Apps == v1.Apps {
 				unhealthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Processing",
@@ -83,7 +93,7 @@ LABEL1:
 				}
 				continue LABEL1
 			}
-
+			// 判断service_name类型的
 			if v.Spec.Selector.MatchLabels.Service_name != "" && v.Spec.Selector.MatchLabels.Service_name == v1.Service_name {
 				unhealthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Processing",
@@ -95,8 +105,18 @@ LABEL1:
 		}
 
 		for _, v2 := range oneclusterpods.SingleClusterHealthyPods.PodStatus {
+			// 判断redis
+			if v.Spec.Selector.MatchLabels.Appredis != "" && v.Spec.Selector.MatchLabels.Apps == v2.Appredis {
+				log.Println(v.Metadata.Name)
+				healthyappstatus[v.Metadata.Name] = Pod{
+					Status:       "Running",
+					Apps:         v.Spec.Selector.MatchLabels.Apps,
+					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+				}
+				continue LABEL1
+			}
+			// 判断app.alauda.io类型的
 			if v.Spec.Selector.MatchLabels.Apps != "" && v.Spec.Selector.MatchLabels.Apps == v2.Apps {
-				log.Println(v2.Apps)
 				healthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Running",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
@@ -114,7 +134,7 @@ LABEL1:
 				}
 				continue LABEL1
 			}
-
+			// 判断service_name类型的
 			healthyappstatus[v.Metadata.Name] = Pod{
 				Status:       "Stop",
 				Apps:         v.Spec.Selector.MatchLabels.Apps,
