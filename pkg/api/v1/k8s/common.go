@@ -64,6 +64,8 @@ func Watch(cluster string, its tools.Request, resource string) {
 	DecodeJson(cluster, resp, resource)
 }
 
+var nilpodevent PodEvents
+
 func DecodeJson(cluster string, resp *http.Response, resource string) {
 	switch resource {
 	case "nodes":
@@ -85,7 +87,10 @@ func DecodeJson(cluster string, resp *http.Response, resource string) {
 			// if err != nil {
 			// 	log.Println(err)
 			// }
-			log.Println(b)
+			if b == nilpodevent {
+				log.Println("have nil prase")
+				continue
+			}
 			chandata[cluster] = b
 			K8SChan <- chandata
 		}

@@ -66,6 +66,7 @@ func init() {
 						Status:       x.Object.Status.Phase,
 						Service_name: x.Object.Metadata.Labels.Service_name,
 						Apps:         x.Object.Metadata.Labels.Apps,
+						PodIp:        x.Object.Status.PodIp,
 					}
 					// log.Println(poddetail)
 					PodModifyed(k, poddetail, podname, eventtype)
