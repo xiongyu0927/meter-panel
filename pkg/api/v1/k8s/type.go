@@ -27,6 +27,7 @@ type pod struct {
 
 type podstatus struct {
 	Phase string
+	PodIp string `json:"podIp"`
 }
 
 type app struct {
@@ -140,6 +141,7 @@ type unhealthypods struct {
 
 type Pod struct {
 	Status       string
+	PodIp        string
 	Service_name string `json:"Service_name"`
 	Apps         string `json:"app.alauda.io/name"`
 }

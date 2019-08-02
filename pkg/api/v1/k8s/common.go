@@ -65,11 +65,10 @@ func Watch(cluster string, its tools.Request, resource string) {
 }
 
 func DecodeJson(cluster string, resp *http.Response, resource string) {
-	var a NodeEvents
-	var b PodEvents
 	switch resource {
 	case "nodes":
 		for {
+			var a NodeEvents
 			chandata := make(map[string]interface{})
 			err := json.NewDecoder(resp.Body).Decode(&a)
 			if err != nil {
@@ -80,12 +79,13 @@ func DecodeJson(cluster string, resp *http.Response, resource string) {
 		}
 	case "pods":
 		for {
+			var b PodEvents
 			chandata := make(map[string]interface{})
 			_ = json.NewDecoder(resp.Body).Decode(&b)
 			// if err != nil {
 			// 	log.Println(err)
 			// }
-			// log.Println(b.Object.Metadata.Labels.Service_name)
+			log.Println(b)
 			chandata[cluster] = b
 			K8SChan <- chandata
 		}

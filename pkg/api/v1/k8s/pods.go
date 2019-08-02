@@ -76,12 +76,14 @@ func PodsDetail(items []pod, healthypodstatus, unhealthypodstatus map[string]Pod
 		if v2.Status.Phase != "Running" && v2.Status.Phase != "Succeeded" {
 			unhealthypodstatus[v2.Metadata.Name] = Pod{
 				Status:       v2.Status.Phase,
+				PodIp:        v2.Status.PodIp,
 				Service_name: v2.Metadata.Labels.Service_name,
 				Apps:         v2.Metadata.Labels.Apps,
 			}
 		} else {
 			healthypodstatus[v2.Metadata.Name] = Pod{
 				Status:       v2.Status.Phase,
+				PodIp:        v2.Status.PodIp,
 				Service_name: v2.Metadata.Labels.Service_name,
 				Apps:         v2.Metadata.Labels.Apps,
 			}
