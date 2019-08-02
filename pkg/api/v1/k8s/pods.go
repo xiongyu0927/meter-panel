@@ -79,6 +79,7 @@ func PodsDetail(items []pod, healthypodstatus, unhealthypodstatus map[string]Pod
 				PodIp:        v2.Status.PodIp,
 				Service_name: v2.Metadata.Labels.Service_name,
 				Apps:         v2.Metadata.Labels.Apps,
+				Appredis:     v2.Metadata.Labels.Appredis,
 			}
 		} else {
 			healthypodstatus[v2.Metadata.Name] = Pod{
@@ -86,6 +87,7 @@ func PodsDetail(items []pod, healthypodstatus, unhealthypodstatus map[string]Pod
 				PodIp:        v2.Status.PodIp,
 				Service_name: v2.Metadata.Labels.Service_name,
 				Apps:         v2.Metadata.Labels.Apps,
+				Appredis:     v2.Metadata.Labels.Appredis,
 			}
 		}
 	}

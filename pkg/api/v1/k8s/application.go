@@ -81,6 +81,7 @@ LABEL1:
 					Status:       "Processing",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+					Appredis:     v.Spec.Selector.MatchLabels.Appredis,
 				}
 				continue LABEL1
 			}
@@ -90,6 +91,7 @@ LABEL1:
 					Status:       "Processing",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+					Appredis:     v.Spec.Selector.MatchLabels.Appredis,
 				}
 				continue LABEL1
 			}
@@ -99,6 +101,7 @@ LABEL1:
 					Status:       "Processing",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+					Appredis:     v.Spec.Selector.MatchLabels.Appredis,
 				}
 				continue LABEL1
 			}
@@ -112,6 +115,7 @@ LABEL1:
 					Status:       "Running",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+					Appredis:     v.Spec.Selector.MatchLabels.Appredis,
 				}
 				continue LABEL1
 			}
@@ -121,6 +125,7 @@ LABEL1:
 					Status:       "Running",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+					Appredis:     v.Spec.Selector.MatchLabels.Appredis,
 				}
 				continue LABEL1
 			}
@@ -131,6 +136,7 @@ LABEL1:
 					Status:       "Running",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
 					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+					Appredis:     v.Spec.Selector.MatchLabels.Appredis,
 				}
 				continue LABEL1
 			}
@@ -139,6 +145,7 @@ LABEL1:
 				Status:       "Stop",
 				Apps:         v.Spec.Selector.MatchLabels.Apps,
 				Service_name: v.Spec.Selector.MatchLabels.Service_name,
+				Appredis:     v.Spec.Selector.MatchLabels.Appredis,
 			}
 		}
 	}
