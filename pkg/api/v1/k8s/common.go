@@ -87,12 +87,13 @@ func DecodeJson(cluster string, resp *http.Response, resource string) {
 			// if err != nil {
 			// 	log.Println(err)
 			// }
-			if b == nilpodevent {
-				log.Println("have nil prase")
-				continue
+			if b != nilpodevent {
+				chandata[cluster] = b
+				K8SChan <- chandata
+				log.Println("no nil")
+			} else {
+				log.Println("nil")
 			}
-			chandata[cluster] = b
-			K8SChan <- chandata
 		}
 	}
 }
