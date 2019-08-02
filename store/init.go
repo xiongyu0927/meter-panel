@@ -69,8 +69,8 @@ func init() {
 						PodIp:        x.Object.Status.PodIp,
 					}
 					// log.Println(poddetail)
-					PodModifyed(k, poddetail, podname, eventtype)
-					AppModifyed(k, poddetail, podname, eventtype)
+					// PodModifyed(k, poddetail, podname, eventtype)
+					// AppModifyed(k, poddetail, podname, eventtype)
 				}
 			}
 		}
