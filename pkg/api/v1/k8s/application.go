@@ -94,7 +94,16 @@ LABEL1:
 		}
 
 		for _, v2 := range oneclusterpods.SingleClusterHealthyPods.PodStatus {
-			if v.Spec.Selector.MatchLabels.Apps == v2.Apps || v.Spec.Selector.MatchLabels.Service_name == v2.Service_name {
+			if v.Spec.Selector.MatchLabels.Apps != "" && v.Spec.Selector.MatchLabels.Apps == v2.Apps {
+				healthyappstatus[v.Metadata.Name] = Pod{
+					Status:       "Running",
+					Apps:         v.Spec.Selector.MatchLabels.Apps,
+					Service_name: v.Spec.Selector.MatchLabels.Service_name,
+				}
+				continue LABEL1
+			}
+
+			if v.Spec.Selector.MatchLabels.Service_name != "" && v.Spec.Selector.MatchLabels.Service_name == v2.Service_name {
 				healthyappstatus[v.Metadata.Name] = Pod{
 					Status:       "Running",
 					Apps:         v.Spec.Selector.MatchLabels.Apps,
@@ -107,7 +116,6 @@ LABEL1:
 				Apps:         v.Spec.Selector.MatchLabels.Apps,
 				Service_name: v.Spec.Selector.MatchLabels.Service_name,
 			}
-			continue LABEL1
 		}
 	}
 }

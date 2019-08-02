@@ -90,9 +90,6 @@ func DecodeJson(cluster string, resp *http.Response, resource string) {
 			if b != nilpodevent {
 				chandata[cluster] = b
 				K8SChan <- chandata
-				log.Println("no nil")
-			} else {
-				log.Println("nil")
 			}
 		}
 	}
