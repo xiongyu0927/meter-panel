@@ -69,7 +69,7 @@ func init() {
 						PodIp:        x.Object.Status.PodIp,
 					}
 					PodModifyed(k, poddetail, podname, eventtype)
-					// AppModifyed(k, poddetail, podname, eventtype)
+					AppModifyed(k, poddetail, podname)
 				}
 			}
 		}

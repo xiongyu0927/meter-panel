@@ -23,11 +23,25 @@ func GetSingleClusterAppsList(cluster string) k8s.HumanSingleClusterApplications
 	return tmp
 }
 
-func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, eventtype string) {
-	// 判断是否是一个app带来的pod变更,并获取他的标签
-	if poddetail[podname].Apps != "" || poddetail[podname].Service_name != "" {
-		if poddetail[podname].Apps != "" {
-			thisL := poddetail[podname].Apps
+func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
+	for _, v := range poddetail {
+		if v.Appredis != "" {
+			thisL := v.Appredis
+			log.Println("Redis " + thisL)
+			Appplace, place, Appname := GetAppPlace(cluster, thisL, "R")
+			// log.Println(Appplace)
+			if Appplace == NilK8SPod {
+				// 新增带label的pod，Application也无法获取只能重新list一遍
+				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
+				log.Println("List a app, maybe have new app add")
+				return
+			}
+			modifyapp(Appplace, cluster, place, Appname)
+			return
+		}
+
+		if v.Apps != "" {
+			thisL := v.Apps
 			log.Println("hi " + thisL)
 			Appplace, place, Appname := GetAppPlace(cluster, thisL, "A")
 			// log.Println(Appplace)
@@ -35,9 +49,13 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 				// 新增带label的pod，Application也无法获取只能重新list一遍
 				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
 				log.Println("List a app, maybe have new app add")
+				return
 			}
 			modifyapp(Appplace, cluster, place, Appname)
-		} else {
+			return
+		}
+
+		if v.Service_name != "" {
 			thisL := poddetail[podname].Service_name
 			log.Println("hey " + thisL)
 			Appplace, place, Appname := GetAppPlace(cluster, thisL, "S")
@@ -46,13 +64,31 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 				// 新增带label的pod，Application也无法获取只能重新list一遍
 				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
 				log.Println("List a app, maybe have new app add")
+				return
 			}
 			modifyapp(Appplace, cluster, place, Appname)
+			return
 		}
 	}
 }
 
 func GetAppPlace(cluster, label, labelT string) (tmp k8s.Pod, place string, appname string) {
+	if labelT == "R" {
+		for k, v := range StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus {
+			if label == v.Appredis {
+				tmp = StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[k]
+				return tmp, "H", k
+			}
+		}
+
+		for k, v := range StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus {
+			if label == v.Appredis {
+				tmp = StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[k]
+				return tmp, "UH", k
+			}
+		}
+	}
+
 	if labelT == "A" {
 		for k, v := range StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus {
 			if label == v.Apps {
@@ -89,6 +125,25 @@ func GetAppPlace(cluster, label, labelT string) (tmp k8s.Pod, place string, appn
 
 func modifyapp(Appplace k8s.Pod, cluster string, place string, Appname string) {
 	for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
+		if Appplace.Appredis == v.Appredis {
+			if place == "UH" {
+			} else {
+				delete(StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus, Appname)
+				*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number--
+				StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus[Appname] = k8s.Pod{
+					Status:       "Processing",
+					Apps:         Appplace.Apps,
+					Service_name: Appplace.Service_name,
+					Appredis:     Appplace.Appredis,
+				}
+				*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number++
+				log.Println(Appname + "become unhealthy")
+				return
+			}
+		}
+	}
+
+	for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
 		if Appplace.Apps == v.Apps {
 			if place == "UH" {
 			} else {
@@ -98,6 +153,7 @@ func modifyapp(Appplace k8s.Pod, cluster string, place string, Appname string) {
 					Status:       "Processing",
 					Apps:         Appplace.Apps,
 					Service_name: Appplace.Service_name,
+					Appredis:     Appplace.Appredis,
 				}
 				*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number++
 				log.Println(Appname + "become unhealthy")
@@ -115,6 +171,7 @@ func modifyapp(Appplace k8s.Pod, cluster string, place string, Appname string) {
 					Status:       "Running",
 					Apps:         Appplace.Apps,
 					Service_name: Appplace.Service_name,
+					Appredis:     Appplace.Appredis,
 				}
 				*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number++
 				log.Println(Appname + "become healthy")
