@@ -53,6 +53,7 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 
 		if v.Service_name != "" {
 			thisL := poddetail[podname].Service_name
+			log.Println(thisL)
 			Appplace, Appname := GetAppPlace(cluster, thisL, "S")
 			if Appplace == NilK8SPod {
 				// 新增带label的pod，Application也无法获取只能重新list一遍
@@ -115,6 +116,7 @@ func modifyapp(Appplace k8s.Pod, cluster string, Appname string) {
 	for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
 		if Appplace.Appredis == v.Appredis {
 			if Appplace.Status == "Processing" {
+				return
 			} else {
 				delete(StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus, Appname)
 				*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number--
@@ -134,6 +136,7 @@ func modifyapp(Appplace k8s.Pod, cluster string, Appname string) {
 	for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
 		if Appplace.Apps == v.Apps {
 			if Appplace.Status == "Processing" {
+				return
 			} else {
 				delete(StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus, Appname)
 				*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number--
@@ -165,6 +168,7 @@ func modifyapp(Appplace k8s.Pod, cluster string, Appname string) {
 				log.Println(Appname + "become healthy")
 				return
 			}
+			return
 		}
 	}
 
