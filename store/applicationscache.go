@@ -59,7 +59,7 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 			thisL := poddetail[podname].Service_name
 			log.Println("hey " + thisL)
 			Appplace, place, Appname := GetAppPlace(cluster, thisL, "S")
-			// log.Println(Appplace)
+			log.Println(Appplace)
 			if Appplace == NilK8SPod {
 				// 新增带label的pod，Application也无法获取只能重新list一遍
 				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
@@ -76,15 +76,13 @@ func GetAppPlace(cluster, label, labelT string) (tmp k8s.Pod, place string, appn
 	if labelT == "R" {
 		for k, v := range StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus {
 			if label == v.Appredis {
-				tmp = StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[k]
-				return tmp, "H", k
+				return v, "H", k
 			}
 		}
 
 		for k, v := range StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus {
 			if label == v.Appredis {
-				tmp = StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[k]
-				return tmp, "UH", k
+				return v, "UH", k
 			}
 		}
 	}
@@ -92,15 +90,13 @@ func GetAppPlace(cluster, label, labelT string) (tmp k8s.Pod, place string, appn
 	if labelT == "A" {
 		for k, v := range StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus {
 			if label == v.Apps {
-				tmp = StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[k]
-				return tmp, "H", k
+				return v, "H", k
 			}
 		}
 
 		for k, v := range StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus {
 			if label == v.Apps {
-				tmp = StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[k]
-				return tmp, "UH", k
+				return v, "UH", k
 			}
 		}
 	}
@@ -108,15 +104,13 @@ func GetAppPlace(cluster, label, labelT string) (tmp k8s.Pod, place string, appn
 	if labelT == "S" {
 		for k, v := range StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus {
 			if label == v.Service_name {
-				tmp = StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[k]
-				return tmp, "H", k
+				return v, "H", k
 			}
 		}
 
 		for k, v := range StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus {
 			if label == v.Service_name {
-				tmp = StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[k]
-				return tmp, "UH", k
+				return v, "UH", k
 			}
 		}
 	}
