@@ -60,7 +60,7 @@ func init() {
 					NodeModifyed(k, nodedetail, nodename)
 				case k8s.PodEvents:
 					poddetail := make(map[string]k8s.Pod)
-					// eventtype := x.Type
+					eventtype := x.Type
 					podname := x.Object.Metadata.Name
 					poddetail[podname] = k8s.Pod{
 						Status:       x.Object.Status.Phase,
@@ -68,8 +68,7 @@ func init() {
 						Apps:         x.Object.Metadata.Labels.Apps,
 						PodIp:        x.Object.Status.PodIp,
 					}
-					// log.Println(poddetail)
-					// PodModifyed(k, poddetail, podname, eventtype)
+					PodModifyed(k, poddetail, podname, eventtype)
 					// AppModifyed(k, poddetail, podname, eventtype)
 				}
 			}
