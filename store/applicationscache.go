@@ -23,6 +23,15 @@ func GetSingleClusterAppsList(cluster string) k8s.HumanSingleClusterApplications
 	return tmp
 }
 
+func TmpGetAPP(cluster string) k8s.HumanSingleClusterApplicationsList {
+	singlek8sconfig := StoreAllK8SConfigs.GetSingleK8SConfigs(cluster)
+	tmp, err := k8s.ListSingleClusterApplications(singlek8sconfig, StoreAllClusterPodList[cluster])
+	if err != nil {
+		log.Println(err)
+	}
+	return tmp
+}
+
 func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 	for _, v := range poddetail {
 		if v.Appredis != "" {
@@ -43,7 +52,6 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 			thisL := v.Apps
 			Appplace, Appname := GetAppPlace(cluster, thisL, "A")
 			if Appplace == NilK8SPod {
-				log.Println(thisL)
 				// 新增带label的pod，Application也无法获取只能重新list一遍
 				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
 				log.Println("List a app, maybe have new app add")
@@ -56,7 +64,6 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 		if v.Service_name != "" {
 			thisL := v.Service_name
 			Appplace, Appname := GetAppPlace(cluster, thisL, "S")
-			log.Println(Appplace == NilK8SPod)
 			if Appplace == NilK8SPod {
 				log.Println(thisL)
 				// 新增带label的pod，Application也无法获取只能重新list一遍

@@ -37,7 +37,7 @@ func init() {
 		log.Println(err)
 	}
 
-	StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
+	// StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
 
 	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "nodes")
 	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "pods")
@@ -69,7 +69,7 @@ func init() {
 						PodIp:        x.Object.Status.PodIp,
 					}
 					PodModifyed(k, poddetail, podname, eventtype)
-					AppModifyed(k, poddetail, podname)
+					// AppModifyed(k, poddetail, podname)
 				}
 			}
 		}
