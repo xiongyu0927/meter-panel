@@ -40,7 +40,9 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 
 		if v.Apps != "" {
 			thisL := v.Apps
+			log.Println(thisL)
 			Appplace, Appname := GetAppPlace(cluster, thisL, "A")
+			log.Println(Appplace)
 			if Appplace == NilK8SPod {
 				// 新增带label的pod，Application也无法获取只能重新list一遍
 				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
@@ -56,6 +58,7 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 			log.Println(thisL)
 			Appplace, Appname := GetAppPlace(cluster, thisL, "S")
 			log.Println(Appplace)
+			log.Println(Appplace == NilK8SPod)
 			if Appplace == NilK8SPod {
 				// 新增带label的pod，Application也无法获取只能重新list一遍
 				StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
