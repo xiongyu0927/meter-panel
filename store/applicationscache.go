@@ -34,7 +34,7 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 				log.Println("List a app, maybe have new app add")
 				return
 			}
-			modifyapp(Appplace, cluster, Appname)
+			modifyapp(Appplace, cluster, Appname, "R")
 			return
 		}
 
@@ -47,12 +47,12 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 				log.Println("List a app, maybe have new app add")
 				return
 			}
-			modifyapp(Appplace, cluster, Appname)
+			modifyapp(Appplace, cluster, Appname, "A")
 			return
 		}
 
 		if v.Service_name != "" {
-			thisL := poddetail[podname].Service_name
+			thisL := v.Service_name
 			log.Println(thisL)
 			Appplace, Appname := GetAppPlace(cluster, thisL, "S")
 			if Appplace == NilK8SPod {
@@ -61,7 +61,7 @@ func AppModifyed(cluster string, poddetail map[string]k8s.Pod, podname string) {
 				log.Println("List a app, maybe have new app add")
 				return
 			}
-			modifyapp(Appplace, cluster, Appname)
+			modifyapp(Appplace, cluster, Appname, "S")
 			return
 		}
 	}
@@ -112,63 +112,70 @@ func GetAppPlace(cluster, label, labelT string) (tmp k8s.Pod, appname string) {
 	return NilK8SPod, ""
 }
 
-func modifyapp(Appplace k8s.Pod, cluster string, Appname string) {
-	for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
-		if Appplace.Appredis == v.Appredis {
-			if Appplace.Status == "Processing" {
-				return
-			} else {
-				delete(StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus, Appname)
-				*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number--
-				StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus[Appname] = k8s.Pod{
-					Status:       "Processing",
-					Apps:         Appplace.Apps,
-					Service_name: Appplace.Service_name,
-					Appredis:     Appplace.Appredis,
+func modifyapp(Appplace k8s.Pod, cluster string, Appname string, labelT string) {
+	if labelT == "R" {
+		for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
+			if Appplace.Appredis == v.Appredis {
+				if Appplace.Status == "Processing" {
+					return
+				} else {
+					delete(StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus, Appname)
+					*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number--
+					StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus[Appname] = k8s.Pod{
+						Status:       "Processing",
+						Apps:         Appplace.Apps,
+						Service_name: Appplace.Service_name,
+						Appredis:     Appplace.Appredis,
+					}
+					*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number++
+					log.Println(Appname + "become unhealthy")
+					return
 				}
-				*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number++
-				log.Println(Appname + "become unhealthy")
-				return
 			}
 		}
 	}
 
-	for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
-		if Appplace.Apps == v.Apps {
-			if Appplace.Status == "Processing" {
-				return
-			} else {
-				delete(StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus, Appname)
-				*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number--
-				StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus[Appname] = k8s.Pod{
-					Status:       "Processing",
-					Apps:         Appplace.Apps,
-					Service_name: Appplace.Service_name,
-					Appredis:     Appplace.Appredis,
+	if labelT == "A" {
+		for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
+			if Appplace.Apps == v.Apps {
+				if Appplace.Status == "Processing" {
+					return
+				} else {
+					delete(StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus, Appname)
+					*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number--
+					StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus[Appname] = k8s.Pod{
+						Status:       "Processing",
+						Apps:         Appplace.Apps,
+						Service_name: Appplace.Service_name,
+						Appredis:     Appplace.Appredis,
+					}
+					*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number++
+					log.Println(Appname + " become unhealthy")
+					return
 				}
-				*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number++
-				log.Println(Appname + "become unhealthy")
-				return
 			}
 		}
 	}
 
-	for _, v := range StoreAllClusterPodList[cluster].SingleClusterHealthyPods.PodStatus {
-		if Appplace.Service_name == v.Service_name {
-			if Appplace.Status == "Processing" {
-				delete(StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus, Appname)
-				*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number--
-				StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[Appname] = k8s.Pod{
-					Status:       "Running",
-					Apps:         Appplace.Apps,
-					Service_name: Appplace.Service_name,
-					Appredis:     Appplace.Appredis,
+	if labelT == "S" {
+		for _, v := range StoreAllClusterPodList[cluster].SingleClusterUnHealthyPods.PodStatus {
+			if Appplace.Service_name == v.Service_name {
+				if Appplace.Status == "Processing" {
+					return
+				} else {
+					delete(StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.AppStatus, Appname)
+					*StoreAllClusterAppList[cluster].SingleClusterUnHealthyApp.Number--
+					StoreAllClusterAppList[cluster].SingleClusterHealthyApp.AppStatus[Appname] = k8s.Pod{
+						Status:       "Running",
+						Apps:         Appplace.Apps,
+						Service_name: Appplace.Service_name,
+						Appredis:     Appplace.Appredis,
+					}
+					*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number++
+					log.Println(Appname + " become healthy")
+					return
 				}
-				*StoreAllClusterAppList[cluster].SingleClusterHealthyApp.Number++
-				log.Println(Appname + "become healthy")
-				return
 			}
-			return
 		}
 	}
 
