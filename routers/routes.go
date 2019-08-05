@@ -14,4 +14,5 @@ func init() {
 	Mux.HandleFunc("/api/v1/k8s/pod", controllers.PodViews)
 	Mux.HandleFunc("/api/v1/k8s/app", controllers.AppViews)
 	Mux.HandleFunc("/api/v1/k8s/pv", controllers.PvViews)
+	Mux.HandleFunc("/api/v1/k8s/pv", controllers.LbViews)
 }

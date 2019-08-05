@@ -55,9 +55,8 @@ func ListSingleClusterPvs(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingleC
 
 		PvsDetail(pvslist.Items, pvstatus, &initstorage)
 	}
-	log.Println(initstorage)
+
 	storage := ToGMK(initstorage)
-	log.Println(storage)
 	var tmp2 = HumanSingleClusterPvsList{
 		PvStatus: pvstatus,
 		AllStore: storage,

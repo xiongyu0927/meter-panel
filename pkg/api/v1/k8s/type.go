@@ -24,6 +24,60 @@ type SingleClusterPvList struct {
 	Items    []pv
 }
 
+type SingleClusterSvcList struct {
+	Metadata continuee
+	Items    []svc
+}
+
+type SingleClusterIngressList struct {
+	Metadata continuee
+	Items    []Realingress
+}
+
+type Realingress struct {
+	Metadata metadata
+	Spec     Inspec
+}
+
+type Inspec struct {
+	Rules []rules
+}
+
+type rules struct {
+	Host string
+}
+
+type svc struct {
+	Metadata metadata
+	Spec     svcspec
+	Status   svcstatus
+}
+
+type svcstatus struct {
+	LoadBalancer load `json:"loadBalancer"`
+}
+
+type load struct {
+	Ingress []ingress
+}
+
+type ingress struct {
+	Ip string
+}
+
+type svcspec struct {
+	Ports []port
+	Type  string
+}
+
+type port struct {
+	Name       string
+	Protocol   string
+	Port       int
+	TargetPort int `json:"targetPort"`
+	NodePort   int `json:"NodePort"`
+}
+
 type pv struct {
 	Metadata metadata
 	Spec     spec
@@ -166,6 +220,17 @@ type Pod struct {
 type HumanSingleClusterPvsList struct {
 	PvStatus map[string]string
 	AllStore string
+}
+
+type HumanSingleClusterLbsList struct {
+	LoadBalancer []lb
+}
+
+type lb struct {
+	Type string
+	Name string
+	Ip   []string
+	Port []port
 }
 
 // HumanAllClusterNodeList is used store all cluster's nodes
