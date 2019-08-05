@@ -13,16 +13,16 @@ var (
 )
 
 func ListSingleClusterLB(k8sconfig configs.HumanSingleK8sConfigs) HumanSingleClusterLbsList {
-	lbstatus := make([]lb, 10)
-	ListSingleClusterSvcs(k8sconfig, lbstatus)
-	ListSingleClusterIngress(k8sconfig, lbstatus)
+	lbstatus := make([]lb, 5)
+	ListSingleClusterSvcs(k8sconfig, &lbstatus)
+	ListSingleClusterIngress(k8sconfig, &lbstatus)
 	var tmp = HumanSingleClusterLbsList{
 		LoadBalancer: lbstatus,
 	}
 	return tmp
 }
 
-func ListSingleClusterSvcs(k8sconfig configs.HumanSingleK8sConfigs, lbstatus []lb) {
+func ListSingleClusterSvcs(k8sconfig configs.HumanSingleK8sConfigs, lbstatus *[]lb) {
 	K8sRequest.Host = k8sconfig.EndPoint
 	K8sRequest.BearToken = k8sconfig.Token
 	K8sRequest.Path = "/api/v1/services"
@@ -57,7 +57,7 @@ func ListSingleClusterSvcs(k8sconfig configs.HumanSingleK8sConfigs, lbstatus []l
 	}
 }
 
-func SvcDetail(item []svc, lbstatus []lb) {
+func SvcDetail(item []svc, lbstatus *[]lb) {
 	for _, v2 := range item {
 		if v2.Spec.Type == "loadBalancer" {
 			tmpip := make([]string, 2)
@@ -71,12 +71,12 @@ func SvcDetail(item []svc, lbstatus []lb) {
 				Ip:   tmpip,
 				Port: v2.Spec.Ports,
 			}
-			lbstatus = append(lbstatus, tmp)
+			*lbstatus = append(*lbstatus, tmp)
 		}
 	}
 }
 
-func ListSingleClusterIngress(k8sconfig configs.HumanSingleK8sConfigs, lbstatus []lb) {
+func ListSingleClusterIngress(k8sconfig configs.HumanSingleK8sConfigs, lbstatus *[]lb) {
 	K8sRequest.Host = k8sconfig.EndPoint
 	K8sRequest.BearToken = k8sconfig.Token
 	K8sRequest.Path = "/apis/extensions/v1beta1/ingresses"
@@ -110,7 +110,7 @@ func ListSingleClusterIngress(k8sconfig configs.HumanSingleK8sConfigs, lbstatus 
 	}
 }
 
-func IngressDetail(items []Realingress, lbstatus []lb) {
+func IngressDetail(items []Realingress, lbstatus *[]lb) {
 	for _, v2 := range items {
 		tmphost := make([]string, 2)
 		for _, v3 := range v2.Spec.Rules {
@@ -123,6 +123,6 @@ func IngressDetail(items []Realingress, lbstatus []lb) {
 			Ip:   tmphost,
 			Port: nil,
 		}
-		lbstatus = append(lbstatus, tmp)
+		*lbstatus = append(*lbstatus, tmp)
 	}
 }
