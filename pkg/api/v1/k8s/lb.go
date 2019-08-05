@@ -59,7 +59,7 @@ func ListSingleClusterSvcs(k8sconfig configs.HumanSingleK8sConfigs, lbstatus *[]
 
 func SvcDetail(item []svc, lbstatus *[]lb) {
 	for _, v2 := range item {
-		if v2.Spec.Type == "loadBalancer" {
+		if v2.Spec.Type == "LoadBalancer" {
 			var tmpip []string
 			for _, v3 := range v2.Status.LoadBalancer.Ingress {
 				tmpip = append(tmpip, v3.Ip)
