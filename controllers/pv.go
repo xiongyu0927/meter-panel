@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-func ListSingleClusterPvs(w http.ResponseWriter, r *http.Request) {
+func PvViews(w http.ResponseWriter, r *http.Request) {
 	cluster := r.FormValue("cluster")
-	tmp := store.TmpGetAPP(cluster)
+	tmp := store.GetPv(cluster)
 	data2, err := json.Marshal(tmp)
 	if err != nil {
 		log.Println(err)
