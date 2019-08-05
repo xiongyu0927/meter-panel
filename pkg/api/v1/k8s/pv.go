@@ -65,16 +65,15 @@ func ListSingleClusterPvs(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingleC
 }
 
 func PvsDetail(item []pv, pvstatus map[string]string, initstorage int) {
-	var x int
 	for _, v2 := range item {
 		pvstatus[v2.Metadata.Name] = v2.Spec.Capacity.Storage
 		num := v2.Spec.Capacity.Storage
-		ToB(num)
+		x := ToB(num)
 		initstorage = initstorage + x
 	}
 }
 
-func ToB(num string) {
+func ToB(num string) int {
 	if strings.Contains(num, "Gi") {
 		tmp := strings.SplitN(num, "G", -1)
 		x, err := strconv.Atoi(tmp[0])
@@ -82,7 +81,7 @@ func ToB(num string) {
 			log.Println(err)
 		}
 		x = x << 30
-		return
+		return x
 	}
 
 	if strings.Contains(num, "Mi") {
@@ -92,7 +91,7 @@ func ToB(num string) {
 			log.Println(err)
 		}
 		x = x << 20
-		return
+		return x
 	}
 
 	if strings.Contains(num, "Ki") {
@@ -102,7 +101,7 @@ func ToB(num string) {
 			log.Println(err)
 		}
 		x = x << 10
-		return
+		return x
 	}
 
 	if strings.Contains(num, "G") {
@@ -112,7 +111,7 @@ func ToB(num string) {
 			log.Println(err)
 		}
 		x = x * 1000 * 1000 * 1000
-		return
+		return x
 	}
 
 	if strings.Contains(num, "M") {
@@ -122,7 +121,7 @@ func ToB(num string) {
 			log.Println(err)
 		}
 		x = x * 1000 * 1000
-		return
+		return x
 	}
 
 	if strings.Contains(num, "K") {
@@ -132,8 +131,10 @@ func ToB(num string) {
 			log.Println(err)
 		}
 		x = x * 1000
-		return
+		return x
 	}
+
+	return 0
 }
 
 func ToGMK(s int) string {
