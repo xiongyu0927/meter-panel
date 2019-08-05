@@ -22,4 +22,10 @@ type HumanSingleK8sConfigs struct {
 	Token    string
 }
 
+type HumanSingleProConfigs struct {
+	EndPoint string
+}
+
 type HumanAllK8SConfigs map[string]HumanSingleK8sConfigs
+
+type HumanAllProConfigs map[string]HumanSingleProConfigs

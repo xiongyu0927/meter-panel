@@ -2,6 +2,7 @@ package store
 
 import (
 	"log"
+	"meter-panel/configs"
 	"meter-panel/pkg/api/v1/k8s"
 	"reflect"
 )
@@ -13,6 +14,8 @@ func GetSingleClusterPodsList(cluster string) k8s.HumanSingleClusterPodsList {
 	if !reflect.DeepEqual(data, NilSlingeClusterPodList) {
 		return data
 	}
+	StoreAllK8SConfigs, _ = configs.GetK8SCoinfg()
+	log.Println("maybe have new cluster join")
 	singlek8sconfig := StoreAllK8SConfigs.GetSingleK8SConfigs(cluster)
 	tmp, err := k8s.ListSingleClusterPods(singlek8sconfig)
 	if err != nil {

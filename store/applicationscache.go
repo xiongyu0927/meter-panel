@@ -2,17 +2,20 @@ package store
 
 import (
 	"log"
+	"meter-panel/configs"
 	"meter-panel/pkg/api/v1/k8s"
 	"reflect"
 )
 
 var NilK8SApp k8s.HumanSingleClusterApplicationsList
+var NilK8sSingleClusterConfigs configs.HumanSingleK8sConfigs
 
 func GetSingleClusterAppsList(cluster string) k8s.HumanSingleClusterApplicationsList {
 	data := StoreAllClusterAppList[cluster]
 	if !reflect.DeepEqual(data, NilK8SApp) {
 		return data
 	}
+	StoreAllK8SConfigs, _ = configs.GetK8SCoinfg()
 	singlek8sconfig := StoreAllK8SConfigs.GetSingleK8SConfigs(cluster)
 	tmp, err := k8s.ListSingleClusterApplications(singlek8sconfig, StoreAllClusterPodList[cluster])
 	if err != nil {
@@ -25,6 +28,11 @@ func GetSingleClusterAppsList(cluster string) k8s.HumanSingleClusterApplications
 
 func TmpGetAPP(cluster string) k8s.HumanSingleClusterApplicationsList {
 	singlek8sconfig := StoreAllK8SConfigs.GetSingleK8SConfigs(cluster)
+	if reflect.DeepEqual(singlek8sconfig, NilK8sSingleClusterConfigs) {
+		StoreAllK8SConfigs, _ = configs.GetK8SCoinfg()
+		singlek8sconfig = StoreAllK8SConfigs.GetSingleK8SConfigs(cluster)
+		log.Println("maybe have new cluster join")
+	}
 	tmp, err := k8s.ListSingleClusterApplications(singlek8sconfig, StoreAllClusterPodList[cluster])
 	if err != nil {
 		log.Println(err)
