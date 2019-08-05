@@ -2,7 +2,6 @@ package k8s
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"meter-panel/configs"
 	"strconv"
@@ -56,7 +55,7 @@ func ListSingleClusterPvs(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingleC
 
 		PvsDetail(pvslist.Items, pvstatus, initstorage)
 	}
-
+	log.Println(pvstatus)
 	storage := ToGMK(initstorage)
 	var tmp2 = HumanSingleClusterPvsList{
 		PvStatus: pvstatus,
@@ -150,5 +149,6 @@ func ToGMK(s int) string {
 		suffix = "Ki"
 		b = s / (1 << 10)
 	}
-	return fmt.Sprintf("%d%s\n", b, suffix)
+	tmp := strconv.Itoa(b) + suffix
+	return tmp
 }
