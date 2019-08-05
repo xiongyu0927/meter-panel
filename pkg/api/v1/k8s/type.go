@@ -19,6 +19,16 @@ type SingleClusterPodsList struct {
 	Metadata continuee
 }
 
+type SingleClusterPvList struct {
+	Metadata continuee
+	Items    []pv
+}
+
+type pv struct {
+	Metadata metadata
+	Spec     spec
+}
+
 type pod struct {
 	Metadata metadata
 	Spec     spec
@@ -43,6 +53,11 @@ type metadata struct {
 
 type spec struct {
 	Selector selector
+	Capacity capacity
+}
+
+type capacity struct {
+	Storage string
 }
 
 type selector struct {
@@ -148,9 +163,16 @@ type Pod struct {
 	Appredis     string `json:"app_name"`
 }
 
+type HumanSingleClusterPvsList struct {
+	PvStatus map[string]string
+	AllStore string
+}
+
 // HumanAllClusterNodeList is used store all cluster's nodes
 type HumanAllClusterNodeList map[string]HumanSingleClusterNodeList
 
 type HumanAllClusterApplicationsList map[string]HumanSingleClusterApplicationsList
 
 type HumanAllClusterPodsList map[string]HumanSingleClusterPodsList
+
+type HumanAllClusterPvsList map[string]HumanSingleClusterPvsList
