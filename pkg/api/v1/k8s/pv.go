@@ -40,7 +40,7 @@ func ListSingleClusterPvs(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingleC
 	}
 	pvstatus := make(map[string]string)
 	var initstorage int
-	PvsDetail(pvslist.Items, pvstatus, initstorage)
+	PvsDetail(pvslist.Items, pvstatus, &initstorage)
 
 	if pvslist.Metadata.Continue != "" {
 		K8sRequest.Path = "/api/v1/persistentvolumes?limit=500&continue=" + podslist.Metadata.Continue
@@ -53,7 +53,7 @@ func ListSingleClusterPvs(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingleC
 			return NilHumanSingleClusterPvsList, err
 		}
 
-		PvsDetail(pvslist.Items, pvstatus, initstorage)
+		PvsDetail(pvslist.Items, pvstatus, &initstorage)
 	}
 	log.Println(initstorage)
 	storage := ToGMK(initstorage)
@@ -65,12 +65,12 @@ func ListSingleClusterPvs(k8sconfig configs.HumanSingleK8sConfigs) (HumanSingleC
 	return tmp2, nil
 }
 
-func PvsDetail(item []pv, pvstatus map[string]string, initstorage int) {
+func PvsDetail(item []pv, pvstatus map[string]string, initstorage *int) {
 	for _, v2 := range item {
 		pvstatus[v2.Metadata.Name] = v2.Spec.Capacity.Storage
 		num := v2.Spec.Capacity.Storage
 		x := ToB(num)
-		initstorage = initstorage + x
+		*initstorage = *initstorage + x
 	}
 }
 
