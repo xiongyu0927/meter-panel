@@ -13,7 +13,7 @@ var (
 )
 
 func ListSingleClusterLB(k8sconfig configs.HumanSingleK8sConfigs) HumanSingleClusterLbsList {
-	lbstatus := make([]lb, 5)
+	var lbstatus []lb
 	ListSingleClusterSvcs(k8sconfig, &lbstatus)
 	ListSingleClusterIngress(k8sconfig, &lbstatus)
 	var tmp = HumanSingleClusterLbsList{
@@ -60,7 +60,7 @@ func ListSingleClusterSvcs(k8sconfig configs.HumanSingleK8sConfigs, lbstatus *[]
 func SvcDetail(item []svc, lbstatus *[]lb) {
 	for _, v2 := range item {
 		if v2.Spec.Type == "loadBalancer" {
-			tmpip := make([]string, 2)
+			var tmpip []string
 			for _, v3 := range v2.Status.LoadBalancer.Ingress {
 				tmpip = append(tmpip, v3.Ip)
 			}
@@ -112,7 +112,7 @@ func ListSingleClusterIngress(k8sconfig configs.HumanSingleK8sConfigs, lbstatus 
 
 func IngressDetail(items []Realingress, lbstatus *[]lb) {
 	for _, v2 := range items {
-		tmphost := make([]string, 2)
+		var tmphost []string
 		for _, v3 := range v2.Spec.Rules {
 			tmphost = append(tmphost, v3.Host)
 		}
