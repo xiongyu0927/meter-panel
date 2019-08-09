@@ -84,3 +84,12 @@ func PodModifyed(cluster string, poddetail map[string]k8s.Pod, podname string, e
 		}
 	}
 }
+
+// ProAddrModified is used for watch every prometheus's address in every cluster
+func ProAddrModified(cluster string, poddetail map[string]k8s.Pod, podname string) {
+	if podname == "prometheus-kube-prometheus-0" {
+		if StoreAllProConfigs[cluster] != poddetail[podname].PodIp {
+			StoreAllProConfigs[cluster] = poddetail[podname].PodIp
+		}
+	}
+}

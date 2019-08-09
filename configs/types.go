@@ -22,10 +22,5 @@ type HumanSingleK8sConfigs struct {
 	Token    string
 }
 
-type HumanSingleProConfigs struct {
-	EndPoint string
-}
-
+// HumanAllK8SConfigs save all cluster's k8s configs
 type HumanAllK8SConfigs map[string]HumanSingleK8sConfigs
-
-type HumanAllProConfigs map[string]HumanSingleProConfigs

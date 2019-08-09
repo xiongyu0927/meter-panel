@@ -3,6 +3,7 @@ package k8s
 import (
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"log"
 	"meter-panel/configs"
 	"meter-panel/tools"
@@ -93,4 +94,33 @@ func DecodeJson(cluster string, resp *http.Response, resource string) {
 			}
 		}
 	}
+}
+
+func ListAllClusterProCfg(allp HumanAllClusterPodsList, allc configs.HumanAllK8SConfigs) (map[string]string, error) {
+	tmp := make(map[string]string, 4)
+
+	tmp = configs.GetProConfig4ENV(allc)
+	if tmp != nil {
+		return tmp, nil
+	}
+
+	tmp = GetProCfg4LocalPodCache(allp)
+	if tmp != nil {
+		return tmp, nil
+	}
+
+	return nil, errors.New("can't load promethues cfg from anyway")
+}
+
+// GetProCfg4LocalPodCache is used when the env doesn't set
+func GetProCfg4LocalPodCache(allp HumanAllClusterPodsList) map[string]string {
+	ProCfg := make(map[string]string, 4)
+	for k1, v1 := range allp {
+		for k2, v2 := range v1.SingleClusterHealthyPods.PodStatus {
+			if k2 == "prometheus-kube-prometheus-0" {
+				ProCfg[k1] = v2.PodIp
+			}
+		}
+	}
+	return ProCfg
 }

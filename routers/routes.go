@@ -15,4 +15,7 @@ func init() {
 	Mux.HandleFunc("/api/v1/k8s/app", controllers.AppViews)
 	Mux.HandleFunc("/api/v1/k8s/pv", controllers.PvViews)
 	Mux.HandleFunc("/api/v1/k8s/lb", controllers.LbViews)
+	Mux.HandleFunc("/api/v1/k8s/cpu", controllers.CpuViews)
+	Mux.HandleFunc("/api/v1/k8s/mem", controllers.MemViews)
+	Mux.HandleFunc("/api/v1/k8s/alerts", controllers.AlertViews)
 }

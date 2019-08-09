@@ -11,14 +11,17 @@ var (
 	StoreAllClusterNodeList k8s.HumanAllClusterNodeList
 	// StoreAllK8SConfigs is used save all cluster configs in the memory
 	StoreAllK8SConfigs configs.HumanAllK8SConfigs
-	// StoreAllClusterPodslist is used save all cluster pod list in the memory
+	// StoreAllProConfigs is used save all prometheus configs in the memory
+	StoreAllProConfigs map[string]string
+	// StoreAllClusterPodList is used save all cluster pod list in the memory
 	StoreAllClusterPodList k8s.HumanAllClusterPodsList
 	// StoreAllClusterAppList is used save all cluster app list in the memory
 	StoreAllClusterAppList k8s.HumanAllClusterApplicationsList
 	// NilSingleClusterNodeList is used return nil value of HumanSingleClusterNodeList
 	NilSingleClusterNodeList k8s.HumanSingleClusterNodeList
-	NilSlingeClusterPodList  k8s.HumanSingleClusterApplicationsList
-	err                      error
+	// NilSlingeClusterPodList is used return nil value of HumanSingleClusterPodList
+	NilSlingeClusterPodList k8s.HumanSingleClusterApplicationsList
+	err                     error
 )
 
 func init() {
@@ -37,6 +40,10 @@ func init() {
 		log.Println(err)
 	}
 
+	StoreAllProConfigs, err = k8s.ListAllClusterProCfg(StoreAllClusterPodList, StoreAllK8SConfigs)
+	if err != nil {
+		log.Println(err)
+	}
 	// StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
 
 	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "nodes")
@@ -70,6 +77,7 @@ func init() {
 					}
 					PodModifyed(k, poddetail, podname, eventtype)
 					// AppModifyed(k, poddetail, podname)
+					ProAddrModified(k, poddetail, podname)
 				}
 			}
 		}
