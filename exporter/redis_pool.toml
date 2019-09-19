@@ -1,0 +1,12 @@
+#4个参数依次是：pod的key，pod的value，Reader Pool大小，Write Pool大小
+PoolSeting=[
+            ["service_name", "lightkeeper2", "10", "10"], #10,10 环境变量有设置，代码中没引用
+            ["service_name", "heimdall", "32", "32"], #40,40 代码中设置默认值是40，环境变量优先
+            ["service_name", "jakiro", "32", "32"], #32, 32 #环境变量有设置，代码中没引用，默认值32
+            ["service_name", "furion", "32", ""], #环境变量有设置，代码没引用，代码中只写了一个Reader的，默认值32
+            ["service_name", "darchow", "32", ""], #环境变量有设置，代码没引用，代码中只写了一个Reader的，默认值32
+            ["service_name", "krobelus", "32", "32"], #环境变量有设置，代码有默认值都是32
+            ["service_name", "enigma", "32", "32"], #环境变量有设置，代码有默认值都是32
+            # ["service_name", "razzil". "", ""], #razzil不知道怎么监控redis连接池，代码中创建了4个key为Reader的连接池，无法判断每个连接来自哪个连接池。
+            ["service_name", "jakiro2","32", "32"] #10,10
+]

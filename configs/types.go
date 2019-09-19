@@ -15,12 +15,3 @@ type kubernetes struct {
 	Token    string `json:"token"`
 	Endpoint string `json:"endpoint"`
 }
-
-// HumanSingleK8sConfigs protect your eyes
-type HumanSingleK8sConfigs struct {
-	EndPoint string
-	Token    string
-}
-
-// HumanAllK8SConfigs save all cluster's k8s configs
-type HumanAllK8SConfigs map[string]HumanSingleK8sConfigs

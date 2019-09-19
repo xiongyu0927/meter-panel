@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	_ "meter-panel/exporter"
 	"meter-panel/routers"
 	"net/http"
 )

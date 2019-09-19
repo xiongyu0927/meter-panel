@@ -1,0 +1,11 @@
+FROM golang:latest
+
+RUN mkdir -p /go/src/meter-panel
+
+WORKDIR /go/src/meter-panel/
+
+COPY ./main /go/src/meter-panel/
+
+EXPOSE 12300
+
+CMD /go/src/meter-panel/main

@@ -1,85 +1,57 @@
 package store
 
 import (
+	"fmt"
 	"log"
 	"meter-panel/configs"
-	"meter-panel/pkg/api/v1/k8s"
+	"meter-panel/pkg/api/v1/k8s/core"
+	"meter-panel/pkg/api/v1/k8s/crd"
+
+	"k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/client-go/informers"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/cache"
 )
 
 var (
-	//StoreAllClusterNodeList is used save all cluster node list in the memory
-	StoreAllClusterNodeList k8s.HumanAllClusterNodeList
 	// StoreAllK8SConfigs is used save all cluster configs in the memory
-	StoreAllK8SConfigs configs.HumanAllK8SConfigs
-	// StoreAllProConfigs is used save all prometheus configs in the memory
-	StoreAllProConfigs map[string]string
-	// StoreAllClusterPodList is used save all cluster pod list in the memory
-	StoreAllClusterPodList k8s.HumanAllClusterPodsList
-	// StoreAllClusterAppList is used save all cluster app list in the memory
-	StoreAllClusterAppList k8s.HumanAllClusterApplicationsList
-	// NilSingleClusterNodeList is used return nil value of HumanSingleClusterNodeList
-	NilSingleClusterNodeList k8s.HumanSingleClusterNodeList
-	// NilSlingeClusterPodList is used return nil value of HumanSingleClusterPodList
-	NilSlingeClusterPodList k8s.HumanSingleClusterApplicationsList
-	err                     error
+	StoreAllK8SConfigs configs.AllK8SConfigs
+	AllLister          *core.AllLister
+	AllStore           *crd.AllStore
+	ProUseEnv          bool
+	ProCfg             map[string]string
+	EsClient           *core.EsClient
+	err                error
 )
 
 func init() {
-	StoreAllK8SConfigs, err = configs.GetK8SCoinfg()
+	// StoreAllK8SConfigs = configs.InitK8SCoinfg()
+	StoreAllK8SConfigs = configs.LocalTest()
+	AllLister = core.NewAllLister(StoreAllK8SConfigs)
+	AllStore = crd.NewAllStore(StoreAllK8SConfigs)
+	ProCfg = GetProAddressFromEnv(StoreAllK8SConfigs)
+	// EsClient, err = core.NewEsClient(StoreAllK8SConfigs)
 	if err != nil {
 		log.Println(err)
 	}
-
-	StoreAllClusterNodeList, err = k8s.ListAllClusterNodes(StoreAllK8SConfigs)
-	if err != nil {
-		log.Println(err)
-	}
-
-	StoreAllClusterPodList, err = k8s.ListAllClusterPods(StoreAllK8SConfigs)
-	if err != nil {
-		log.Println(err)
-	}
-
-	StoreAllProConfigs, err = k8s.ListAllClusterProCfg(StoreAllClusterPodList, StoreAllK8SConfigs)
-	if err != nil {
-		log.Println(err)
-	}
-	// StoreAllClusterAppList, err = k8s.ListAllClusterApplications(StoreAllK8SConfigs, StoreAllClusterPodList)
-
-	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "nodes")
-	k8s.WatchAllClusterResource(StoreAllK8SConfigs, "pods")
+	// EsClient.Loop()
+	// log.Println(EsClient.Data)
+	log.Println("all resource of k8s, prometheus and es were init successed")
 }
 
-func init() {
-	go func() {
-		for {
-			tmp := <-k8s.K8SChan
-			for k, v := range tmp {
-				switch x := v.(type) {
-				case k8s.NodeEvents:
-					nodedetail := make(map[string]string)
-					nodename := x.Object.Metadata.Name
-					for _, v2 := range x.Object.Status.Conditions {
-						if v2.Type == "Ready" {
-							nodedetail[nodename] = v2.Status
-						}
-					}
-					NodeModifyed(k, nodedetail, nodename)
-				case k8s.PodEvents:
-					poddetail := make(map[string]k8s.Pod)
-					eventtype := x.Type
-					podname := x.Object.Metadata.Name
-					poddetail[podname] = k8s.Pod{
-						Status:       x.Object.Status.Phase,
-						Service_name: x.Object.Metadata.Labels.Service_name,
-						Apps:         x.Object.Metadata.Labels.Apps,
-						PodIp:        x.Object.Status.PodIp,
-					}
-					PodModifyed(k, poddetail, podname, eventtype)
-					// AppModifyed(k, poddetail, podname)
-					ProAddrModified(k, poddetail, podname)
-				}
-			}
+func AddNewClusterResource(cluster string) {
+	cf := StoreAllK8SConfigs.GetSingleK8SConig(cluster)
+	cs := kubernetes.NewForConfigOrDie(cf)
+	stopper := make(chan struct{})
+	factory := informers.NewSharedInformerFactory(cs, 30)
+	ifs := AllLister.RegisterInformorAndLister(factory, cluster)
+	defer runtime.HandleCrash()
+	go factory.Start(stopper)
+
+	for _, v := range ifs {
+		if !cache.WaitForCacheSync(stopper, v.HasSynced) {
+			runtime.HandleError(fmt.Errorf("Timed out waiting for caches to sync"))
+			return
 		}
-	}()
+	}
 }
