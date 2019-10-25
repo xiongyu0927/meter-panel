@@ -34,7 +34,8 @@ func CpuViews(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Println(pl[0].Name)
-		tmp = store.ListSingleClusterCpu(pl[0].Status.PodIP)
+		address := pl[0].Status.PodIP + ":9090"
+		tmp = store.ListSingleClusterCpu(address)
 	}
 	w.Write(tmp)
 	// fakedata := "{\"status\":\"success\",\"data\":{\"resultType\":\"vector\",\"result\":[{\"metric\":{},\"value\":[1564972370.447,\"0.5997867933742264\"]}]}}"
@@ -59,7 +60,8 @@ func MemViews(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, EPrometheus, 400)
 			return
 		}
-		tmp = store.ListSingleClusterMem(pl[0].Status.PodIP)
+		address := pl[0].Status.PodIP + ":9090"
+		tmp = store.ListSingleClusterMem(address)
 	}
 	w.Write(tmp)
 	// fakedata := "{\"status\":\"success\",\"data\":{\"resultType\":\"vector\",\"result\":[{\"metric\":{},\"value\":[1563271125.722,\"33.71522723799342\"]}]}}"
@@ -85,7 +87,8 @@ func AlertViews(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Println("Get prometheus pod address" + pl[0].Status.PodIP)
-		tmp = store.ListSingleClusterAlerts(pl[0].Status.PodIP)
+		address := pl[0].Status.PodIP + ":9090"
+		tmp = store.ListSingleClusterAlerts(address)
 	}
 	w.Write(tmp)
 	// fakedata := "{\"status\":\"success\",\"data\":{\"resultType\":\"vector\",\"result\":[{\"metric\":{},\"value\":[1563271125.722,\"33.71522723799342\"]}]}}"

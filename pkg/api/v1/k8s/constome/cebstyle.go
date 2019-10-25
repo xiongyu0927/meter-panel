@@ -220,7 +220,7 @@ func (its *CebStyle) OrganizeIngressList(cluster string, il []*v1beta1.Ingress) 
 }
 
 // 0 is Stop, 1 is Processing, 2 is Running
-func (its *CebStyle) OrganzieDeploymentList(dl []*av1.Deployment) []int {
+func (its *CebStyle) OrganizeDeploymentList(dl []*av1.Deployment) []int {
 	status := make([]int, 0)
 	for _, v := range dl {
 		if *v.Spec.Replicas == 0 {
@@ -239,7 +239,7 @@ func (its *CebStyle) OrganzieDeploymentList(dl []*av1.Deployment) []int {
 }
 
 // 0 is Stop, 1 is Processing, 2 is Running
-func (its *CebStyle) OrganzieDaemonSetList(dsl []*av1.DaemonSet) []int {
+func (its *CebStyle) OrganizeDaemonSetList(dsl []*av1.DaemonSet) []int {
 	status := make([]int, 0)
 	for _, v := range dsl {
 		if v.Status.DesiredNumberScheduled != v.Status.NumberAvailable {
@@ -252,7 +252,7 @@ func (its *CebStyle) OrganzieDaemonSetList(dsl []*av1.DaemonSet) []int {
 }
 
 // 0 is Stop, 1 is Processing, 2 is Running
-func (its *CebStyle) OrganzieStatefulSetList(sfl []*av1.StatefulSet) []int {
+func (its *CebStyle) OrganizeStatefulSetList(sfl []*av1.StatefulSet) []int {
 	status := make([]int, 0)
 	for _, v := range sfl {
 		if *v.Spec.Replicas == 0 {
@@ -269,7 +269,7 @@ func (its *CebStyle) OrganzieStatefulSetList(sfl []*av1.StatefulSet) []int {
 }
 
 // this is not OrgnaziData interface's function bool is
-func (its *CebStyle) OrganzieApplicationList(cluster string, al []interface{}) interface{} {
+func (its *CebStyle) OrganizeApplicationList(cluster string, al []interface{}) interface{} {
 	var papp []CebProcessingApp
 	var Tnum, Rnum, Pnum, Snum int
 
@@ -306,12 +306,6 @@ func (its *CebStyle) OrganzieApplicationList(cluster string, al []interface{}) i
 	return tmp4
 }
 
-type singleapp struct {
-	Name      string
-	NameSpace string
-	Status    string
-}
-
 func (its *CebStyle) judgeSingleAppStatus(cluster string, t *application.Application) string {
 	var status []int
 	labelset := labels.Set(t.Spec.Selector.MatchLabels).AsSelector()
@@ -324,7 +318,7 @@ func (its *CebStyle) judgeSingleAppStatus(cluster string, t *application.Applica
 			if err != nil {
 				log.Println(err)
 			}
-			tmp := its.OrganzieDeploymentList(dl)
+			tmp := its.OrganizeDeploymentList(dl)
 			status = append(status, tmp...)
 		case "DaemonSet":
 			lister := store.AllLister.DaemonSetLister[cluster]
@@ -332,7 +326,7 @@ func (its *CebStyle) judgeSingleAppStatus(cluster string, t *application.Applica
 			if err != nil {
 				log.Println(err)
 			}
-			tmp := its.OrganzieDaemonSetList(dsl)
+			tmp := its.OrganizeDaemonSetList(dsl)
 			status = append(status, tmp...)
 		case "StatefulSet":
 			lister := store.AllLister.StatefulSetLister[cluster]
@@ -340,7 +334,7 @@ func (its *CebStyle) judgeSingleAppStatus(cluster string, t *application.Applica
 			if err != nil {
 				log.Println(err)
 			}
-			tmp := its.OrganzieStatefulSetList(sl)
+			tmp := its.OrganizeStatefulSetList(sl)
 			status = append(status, tmp...)
 		default:
 		}
@@ -410,6 +404,22 @@ func (its *CebStyle) NodeIsEasy(NodeName string, con interface{}) map[string][]s
 		}
 	}
 	return tmp
+}
+
+func (its *CebStyle) OrganizePipelineList(project []string, pipel []interface{}) interface{} {
+	return "just fake func"
+}
+
+func (its *CebStyle) OrganizeCqbList(project []string) interface{} {
+	return "just fake func"
+}
+
+func (its *CebStyle) OrganizeProjectList(cluster string, prjl []interface{}) interface{} {
+	return "just fake func"
+}
+
+func (its *CebStyle) OrganizeLbList(lb []interface{}) interface{} {
+	return "just fake func"
 }
 
 type CebApp struct {

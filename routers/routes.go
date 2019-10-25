@@ -22,5 +22,8 @@ func init() {
 	Mux.HandleFunc("/api/v1/k8s/mem", controllers.MemViews)
 	Mux.HandleFunc("/api/v1/k8s/alerts", controllers.AlertViews)
 	Mux.HandleFunc("/api/v1/k8s/events", controllers.EventsViews)
+	Mux.HandleFunc("/api/v1/k8s/pipelines", controllers.PipelineViews)
+	Mux.HandleFunc("/api/v1/k8s/codequality", controllers.CqbViews)
+	Mux.HandleFunc("/api/v1/k8s/projects", controllers.ProjectViews)
 	Mux.Handle("/metrics", promhttp.Handler())
 }

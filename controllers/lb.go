@@ -12,7 +12,6 @@ import (
 
 func LbViews(w http.ResponseWriter, r *http.Request) {
 	cluster := r.FormValue("cluster")
-
 	lister := store.AllLister.SvcLister[cluster]
 	if lister == nil {
 		store.AddNewClusterResource(cluster)
@@ -57,6 +56,19 @@ func LbViews(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data2, err := json.Marshal(tmp3)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	w.Write(data2)
+}
+
+func LbViewsYL(w http.ResponseWriter, r *http.Request) {
+	cluster := r.FormValue("cluster")
+	store := store.AllStore.RuleStore[cluster].List()
+	tmp := Style.OrganizeLbList(store)
+	data2, err := json.Marshal(tmp)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), 400)

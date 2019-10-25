@@ -13,6 +13,8 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
+// type Cluster_Project map[string][]string
+
 var (
 	// StoreAllK8SConfigs is used save all cluster configs in the memory
 	StoreAllK8SConfigs configs.AllK8SConfigs
@@ -25,17 +27,17 @@ var (
 )
 
 func init() {
-	// StoreAllK8SConfigs = configs.InitK8SCoinfg()
-	StoreAllK8SConfigs = configs.LocalTest()
+	StoreAllK8SConfigs = configs.InitK8SCoinfg()
+	// StoreAllK8SConfigs = configs.LocalTest()
 	AllLister = core.NewAllLister(StoreAllK8SConfigs)
 	AllStore = crd.NewAllStore(StoreAllK8SConfigs)
 	ProCfg = GetProAddressFromEnv(StoreAllK8SConfigs)
-	// EsClient, err = core.NewEsClient(StoreAllK8SConfigs)
+	EsClient, err = core.NewEsClient(StoreAllK8SConfigs)
 	if err != nil {
 		log.Println(err)
 	}
-	// EsClient.Loop()
-	// log.Println(EsClient.Data)
+	EsClient.Loop()
+	log.Println(EsClient.Data)
 	log.Println("all resource of k8s, prometheus and es were init successed")
 }
 

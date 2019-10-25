@@ -2,6 +2,7 @@ package exporter
 
 import (
 	"log"
+	"meter-panel/configs"
 	"meter-panel/store"
 	"strconv"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/labels"
 )
 
@@ -22,6 +24,10 @@ var RedisPoolConnectCount = prometheus.NewGaugeVec(
 )
 
 func init() {
+	style := viper.GetString("PROJECT")
+	if style != "CEB" {
+		return
+	}
 	cfg = LoadPoolConfig()
 	// cfg = localtest()
 	prometheus.MustRegister(RedisPoolConnectCount)
@@ -90,7 +96,7 @@ func handleData(a string) map[string][]int {
 func paddingData(thistime map[string][]int) map[string][]int {
 	var tmp = make(map[string][]int)
 	var subtmp = make([]int, 4)
-	lister := store.AllLister.PodLister["ace"]
+	lister := store.AllLister.PodLister[configs.GlobalName]
 	for _, v := range cfg.PoolSeting {
 		labelset := labels.Set(map[string]string{v[0]: v[1]}).AsSelector()
 		pl, err := lister.List(labelset)

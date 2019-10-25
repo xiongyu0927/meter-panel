@@ -1,0 +1,90 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    service_name: meter-panel
+  name: meter-panel
+  namespace: alauda-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service_name: meter-panel
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: meter-panel
+        service_name: meter-panel
+      namespace: alauda-system
+    spec:
+      containers:
+      - env:
+        - name: ES_HOST
+          value: "http://10.0.128.75:9200,http://10.0.129.55:9200,http://10.0.129.146:9200"
+        - name: TTL
+          value: "1"
+        - name: regionPro
+          value: "10.0.129.118:30900"
+        - name: globalPro
+          value: "10.0.128.75:30900"
+        - name: PROJECT
+          value: "YILI"
+        - name: ALAUDA
+          value: "ACP"
+        image: 10.0.128.191:60080/claas/meter-panel:v1
+        imagePullPolicy: Always
+        name: meter-panel
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+          requests:
+            cpu: 256m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /etc/pass_es
+          name: alauda-es
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+      - name: alauda-es
+        secret:
+          defaultMode: 420
+          secretName: alauda-es
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service_name: meter-panel
+  name: meter-panel
+  namespace: alauda-system
+spec:
+  ports:
+  - name: meter-panel
+    port: 12300
+    protocol: TCP
+    targetPort: 12300
+  selector:
+    service_name: meter-panel
+  type: ClusterIP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: meter-panel
+  namespace: alauda-system
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: meter-panel
+          servicePort: 12300
+        path: /v2/meter

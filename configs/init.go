@@ -12,5 +12,9 @@ func init() {
 	viper.SetDefault("MONNITOR_FREQUENCE", 15)
 	viper.SetDefault("TTL", 1)
 	viper.SetDefault("K8S_TIMEOUT", 10)
+	viper.SetDefault("ALAUDA", "ACE")
+	viper.SetDefault("FurionHost", "furion:8080")
+	viper.SetDefault("PROJECT", "CEB")
+	viper.SetDefault("GLOBAL_CLUSTER_NAME", "ace")
 	viper.AutomaticEnv()
 }

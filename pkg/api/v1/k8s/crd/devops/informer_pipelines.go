@@ -1,4 +1,4 @@
-package application
+package devops
 
 import (
 	"time"
@@ -11,37 +11,37 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-type AppInterface interface {
-	List(opts metav1.ListOptions) (*ApplicationList, error)
-	Get(name string, options metav1.GetOptions) (*Application, error)
-	Create(*Application) (*Application, error)
+type PipelineInterface interface {
+	List(opts metav1.ListOptions) (*PipelineList, error)
+	Get(name string, options metav1.GetOptions) (*Pipeline, error)
+	Create(pipe *Pipeline) (*Pipeline, error)
 	Watch(opts metav1.ListOptions) (watch.Interface, error)
 }
 
-type AppClient struct {
+type PipelineClient struct {
 	RestClient rest.Interface
 	Ns         string
 }
 
-func (c *AppClient) List(opts metav1.ListOptions) (*ApplicationList, error) {
-	result := ApplicationList{}
+func (c *PipelineClient) List(opts metav1.ListOptions) (*PipelineList, error) {
+	result := PipelineList{}
 	err := c.RestClient.
 		Get().
 		Namespace(c.Ns).
-		Resource("applications").
+		Resource("pipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Do().
 		Into(&result)
-
+	// fmt.Println(result)
 	return &result, err
 }
 
-func (c *AppClient) Get(name string, opts metav1.GetOptions) (*Application, error) {
-	result := Application{}
+func (c *PipelineClient) Get(name string, opts metav1.GetOptions) (*Pipeline, error) {
+	result := Pipeline{}
 	err := c.RestClient.
 		Get().
 		Namespace(c.Ns).
-		Resource("applications").
+		Resource("pipelines").
 		Name(name).
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Do().
@@ -50,31 +50,31 @@ func (c *AppClient) Get(name string, opts metav1.GetOptions) (*Application, erro
 	return &result, err
 }
 
-func (c *AppClient) Create(app *Application) (*Application, error) {
-	result := Application{}
+func (c *PipelineClient) Create(pipe *Pipeline) (*Pipeline, error) {
+	result := Pipeline{}
 	err := c.RestClient.
 		Post().
 		Namespace(c.Ns).
-		Resource("applications").
-		Body(app).
+		Resource("pipelines").
+		Body(pipe).
 		Do().
 		Into(&result)
 
 	return &result, err
 }
 
-func (c *AppClient) Watch(opts metav1.ListOptions) (watch.Interface, error) {
+func (c *PipelineClient) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 	opts.Watch = true
 	return c.RestClient.
 		Get().
 		Namespace(c.Ns).
-		Resource("applications").
+		Resource("pipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Watch()
 }
 
-func WatchResources(clientSet AppInterface) cache.Store {
-	appStore, appController := cache.NewInformer(
+func PipeWatchResources(clientSet PipelineInterface) cache.Store {
+	pipelineStore, pipelineController := cache.NewInformer(
 		&cache.ListWatch{
 			ListFunc: func(lo metav1.ListOptions) (result runtime.Object, err error) {
 				return clientSet.List(lo)
@@ -83,11 +83,11 @@ func WatchResources(clientSet AppInterface) cache.Store {
 				return clientSet.Watch(lo)
 			},
 		},
-		&Application{},
+		&Pipeline{},
 		1*time.Minute,
 		cache.ResourceEventHandlerFuncs{},
 	)
 	stop := make(chan struct{})
-	go appController.Run(stop)
-	return appStore
+	go pipelineController.Run(stop)
+	return pipelineStore
 }

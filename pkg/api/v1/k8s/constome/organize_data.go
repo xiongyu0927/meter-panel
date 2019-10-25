@@ -17,7 +17,12 @@ type OrganizeData interface {
 	// OrganzieDaemonSetList(cluster string, dsl []*av1.DaemonSet) interface{}
 	// OrganzieStatefulSetList(cluster string, sfl []*av1.StatefulSet) interface{}
 	// OrganzieEventList()
-	OrganzieApplicationList(cluster string, al []interface{}) interface{}
+	OrganizeApplicationList(cluster string, al []interface{}) interface{}
+	OrganizePipelineList(project []string, pipel []interface{}) interface{}
+	// OrganizeCqbList(project []string, cqbl []interface{}) interface{}
+	OrganizeCqbList(project []string) interface{}
+	OrganizeProjectList(cluster string, prjl []interface{}) interface{}
+	OrganizeLbList(lb []interface{}) interface{}
 }
 
 // Orgnazi call your OrgnaziData's function

@@ -7,12 +7,11 @@ import (
 	"net/http"
 )
 
-// AppViews is api of return node number and status
-func AppViews(w http.ResponseWriter, r *http.Request) {
+// PipelineViews is api of return node number and status
+func ProjectViews(w http.ResponseWriter, r *http.Request) {
 	cluster := r.FormValue("cluster")
-	al := store.AllStore.AppStore[cluster].List()
-	tmp := Style.OrganizeApplicationList(cluster, al)
-
+	prjl := store.AllStore.ProjectStore.List()
+	tmp := Style.OrganizeProjectList(cluster, prjl)
 	data2, err := json.Marshal(tmp)
 	if err != nil {
 		log.Println(err)

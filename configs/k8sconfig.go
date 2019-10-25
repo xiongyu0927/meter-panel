@@ -2,10 +2,12 @@ package configs
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"meter-panel/tools"
-	"os"
 	"time"
+
+	cav1 "acp/cluster-registry/api/v1alpha1"
 
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -16,14 +18,26 @@ import (
 
 type AllK8SConfigs map[string]*rest.Config
 
+const tokenFile string = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
 var furionrequest = tools.Request{
 	Methoud: "GET",
-	Host:    "furion:8080",
+	Host:    "",
 	Path:    "/v1/regions",
 	//IsHttps shuold be https or http
 	IsHTTPS:   "http",
 	BearToken: "",
 }
+
+var kubernetesRequest = tools.Request{
+	Methoud:   "GET",
+	Host:      "10.96.0.1:443",
+	Path:      "/apis/clusterregistry.k8s.io/v1alpha1/clusters?limit=500",
+	IsHTTPS:   "https",
+	BearToken: "",
+}
+
+var GlobalName string
 
 // GetSingleK8SConig is used return a k8s clien-go rest config
 func (its *AllK8SConfigs) GetSingleK8SConig(cluster string) *rest.Config {
@@ -44,30 +58,66 @@ func (its *AllK8SConfigs) Update(cluster string) {
 
 // InitK8SCoinfg is used get a all k8s cluster config
 func InitK8SCoinfg() AllK8SConfigs {
-	furionhost := os.Getenv("FurionHost")
-	if furionhost == "" {
-		log.Println("enviroment doesn't set, will use default config furion:8080")
-	} else {
-		furionrequest.Host = furionhost
-	}
-	data, err := furionrequest.Get()
-	if err != nil {
-		log.Fatal(err)
-	}
-	var k8sconfig []K8sconfigs
-	err = json.Unmarshal(data, &k8sconfig)
-	if err != nil {
-		log.Println(err)
+	platform := viper.GetString("ALAUDA")
+	GlobalName = viper.GetString("GLOBAL_CLUSTER_NAME")
+
+	if platform == "ACE" {
+		furionrequest.Host = viper.GetString("FurionHost")
+		data, err := furionrequest.Get()
+		if err != nil {
+			log.Fatal(err)
+		}
+		var k8sconfig []K8sconfigs
+		err = json.Unmarshal(data, &k8sconfig)
+		if err != nil {
+			log.Println(err)
+		}
+
+		var tmp = make(map[string]*rest.Config)
+		for _, v := range k8sconfig {
+			endpoint := v.Attr.Kubernetes.Endpoint
+			Token := v.Attr.Kubernetes.Token
+			tmp[v.Name] = GenerateRestConfig(endpoint, Token)
+		}
+
+		return tmp
 	}
 
-	var tmp = make(map[string]*rest.Config)
-	for _, v := range k8sconfig {
-		endpoint := v.Attr.Kubernetes.Endpoint
-		Token := v.Attr.Kubernetes.Token
-		tmp[v.Name] = GenerateRestConfig(endpoint, Token)
+	// ACP init k8s config
+	if platform == "ACP" {
+		if token, err := ioutil.ReadFile(tokenFile); err == nil {
+			kubernetesRequest.BearToken = string(token)
+		}
+		data, err := kubernetesRequest.Get()
+		if err != nil {
+			log.Println(err)
+		}
+
+		var cfg cav1.ClusterList
+		err = json.Unmarshal(data, &cfg)
+		if err != nil {
+			log.Println(err)
+		}
+
+		var tmp = make(map[string]*rest.Config)
+		var c attr
+		for _, v := range cfg.Items {
+			if a := v.Annotations["legacy.cluster.alauda.io/attr"]; a != "" {
+				json.Unmarshal([]byte(a), &c)
+				endpoint := c.Kubernetes.Endpoint
+				token := c.Kubernetes.Token
+				tmp[v.ObjectMeta.Name] = GenerateRestConfig(endpoint, token)
+			} else {
+				endpoint := "https://10.96.0.1:443"
+				token := kubernetesRequest.BearToken
+				tmp[v.ObjectMeta.Name] = GenerateRestConfig(endpoint, token)
+			}
+		}
+		return tmp
 	}
 
-	return tmp
+	log.Fatal("please check env \"ALAUDA\" it must be ACP or ACE")
+	return nil
 }
 
 // GenerateRestConfig return a client-go rest config
@@ -95,8 +145,8 @@ func GenerateRestConfig(ep, tk string) *rest.Config {
 // LocalTest is local test
 func LocalTest() AllK8SConfigs {
 	cf := &rest.Config{
-		Host:            "https://129.28.147.60:6443",
-		BearerToken:     "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJjbHVzdGVycm9sZS1hZ2dyZWdhdGlvbi1jb250cm9sbGVyLXRva2VuLXA0ZndmIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImNsdXN0ZXJyb2xlLWFnZ3JlZ2F0aW9uLWNvbnRyb2xsZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiIzNjljMTU1ZC03NTU0LTExZTktYjFiNS01MjU0MDA1YzAyODEiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06Y2x1c3RlcnJvbGUtYWdncmVnYXRpb24tY29udHJvbGxlciJ9.Egx8MTAAwy0n9FGGDeI-36y7KUCsFcjQWI4cLfJbh3AlIhIswsZpbcf12bNUVUhD-3NsQuN93F-bwgDCr3Ft6-Je9t-ofnCfOIcEPDA-8xPJhbpNZcWYqJGSWZRlVgIEXMbbJNbZGJmgrJkBN6tkc30N0B2RjNE3j4qY-Q-vf1gLPBDk2H8FLGnFa9Iy1py0xvlnrkXyFuqzmjEEvgRmfIBCNn-4ImRFLuGlZsFSGqrlo-JzOWf5tKzfyxXfOKUfF4OOXAgnbPxeWqsxySyJN0rigaqQT_3kuxMmyEN3kAsVk5jgj9jEzyfPe4nX0PySV1N7AqqkrI2qQeSm5FopbQ",
+		Host:            "https://94.191.112.216:6443",
+		BearerToken:     "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJhbGF1ZGEtc3lzdGVtIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRlZmF1bHQtdG9rZW4tcnE5NGMiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGVmYXVsdCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjRjYjUzYmU1LWNmYTItMTFlOS04ZjZkLTUyNTQwMDEzMTJjZiIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDphbGF1ZGEtc3lzdGVtOmRlZmF1bHQifQ.ILtyR5NJrHcFk0P7pN4xymup236MtSCQfH9fwdvpdC75B-1eXR4Z_TsiXM6J5pXNM8I-YoYGq8G1Cx0n8_HGifxBm5BVo-vV5mOL6jzGX6lZ32XO5y7yJ571mEW4ibpUN3rJiGvNPVmXyEtRyVe0NICHmG7waHhvR9HxqB-YQ5UROohuIX5wOPaRwDMiPNRhJEVIE72P4HE0FsC0Ab9vzrJLxuUHf1UznxHlGWD64LfhfUDEBxVGgiQYDcs8D_F9ImGHUXkDhSxK-f8ovSluhHg1MpZOlWumd_ObJ4mzLAae1cgOfsiCbTJX9Nj1IyLa4X0sRuYTVb_bITCTXyDiLQ",
 		Timeout:         time.Duration(10) * time.Second,
 		TLSClientConfig: rest.TLSClientConfig{Insecure: true},
 	}
