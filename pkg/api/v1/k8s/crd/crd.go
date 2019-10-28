@@ -12,8 +12,8 @@ import (
 type EveryClusterApplicationStore map[string]cache.Store
 
 type AllStore struct {
-	appclientset map[string]*application.ApplicationClient
-	AppStore     EveryClusterApplicationStore
+	ClientSet map[string]*application.ApplicationClient
+	AppStore  EveryClusterApplicationStore
 }
 
 func NewAllStore(HAKC configs.AllK8SConfigs) *AllStore {
@@ -26,8 +26,8 @@ func NewAllStore(HAKC configs.AllK8SConfigs) *AllStore {
 		}
 	}
 	AS := &AllStore{
-		appclientset: cs,
-		AppStore:     make(map[string]cache.Store),
+		ClientSet: cs,
+		AppStore:  make(map[string]cache.Store),
 	}
 	AS.ResuorceLoad()
 	return AS
@@ -35,7 +35,7 @@ func NewAllStore(HAKC configs.AllK8SConfigs) *AllStore {
 
 func (its *AllStore) ResuorceLoad() {
 	application.AddToScheme(scheme.Scheme)
-	for k, v := range its.appclientset {
+	for k, v := range its.ClientSet {
 		its.AppStore[k] = application.WatchResources(v)
 	}
 }

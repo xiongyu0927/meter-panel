@@ -3,7 +3,6 @@ package exporter
 import (
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -54,8 +53,8 @@ func LoadPoolConfig() config {
 
 	frequence := viper.GetInt("MONNITOR_FREQUENCE")
 	config.refresh_frequence = time.Duration(frequence) * time.Second
-	config.address = strings.SplitN(os.Getenv("REDIS_HOST"), ",", -1)
-	password, err := ioutil.ReadFile("/etc/paas_redis/password")
+	config.address = strings.SplitN(viper.GetString("REDIS_HOST"), ",", -1)
+	password, err := ioutil.ReadFile("/etc/pass_redis/password")
 	if err != nil {
 		log.Println(err)
 	}

@@ -21,21 +21,23 @@ var (
 	ProUseEnv          bool
 	ProCfg             map[string]string
 	EsClient           *core.EsClient
+	Model              *Models
 	err                error
 )
 
 func init() {
-	// StoreAllK8SConfigs = configs.InitK8SCoinfg()
-	StoreAllK8SConfigs = configs.LocalTest()
+	StoreAllK8SConfigs = configs.InitK8SCoinfg()
+	// StoreAllK8SConfigs = configs.LocalTest()
 	AllLister = core.NewAllLister(StoreAllK8SConfigs)
 	AllStore = crd.NewAllStore(StoreAllK8SConfigs)
 	ProCfg = GetProAddressFromEnv(StoreAllK8SConfigs)
-	// EsClient, err = core.NewEsClient(StoreAllK8SConfigs)
+	Model = NewModels(AllLister.TheInformers)
+	EsClient, err = core.NewEsClient(StoreAllK8SConfigs)
 	if err != nil {
 		log.Println(err)
 	}
-	// EsClient.Loop()
-	// log.Println(EsClient.Data)
+	EsClient.Loop()
+	log.Println(EsClient.Data)
 	log.Println("all resource of k8s, prometheus and es were init successed")
 }
 

@@ -7,12 +7,11 @@ import (
 	"io/ioutil"
 	"log"
 	"meter-panel/configs"
-	"os"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/robfig/cron"
+	"github.com/spf13/viper"
 
 	elastic "gopkg.in/olivere/elastic.v5"
 )
@@ -98,7 +97,7 @@ func (its *EsClient) initDate() {
 }
 
 func GenerateESclient() (*elastic.Client, error) {
-	Host := strings.SplitN(os.Getenv("ES_HOST"), ",", -1)
+	Host := strings.SplitN(viper.GetString("ES_HOST"), ",", -1)
 	un, err := ioutil.ReadFile("/etc/pass_es/username")
 	if err != nil {
 		return nil, err
@@ -119,11 +118,7 @@ func GenerateESclient() (*elastic.Client, error) {
 }
 
 func (its *EsClient) GenerateAllIndex() error {
-	ttl := os.Getenv("TTL")
-	num, err := strconv.Atoi(ttl)
-	if err != nil {
-		return err
-	}
+	num := viper.GetInt("TTL")
 	var tmp []string
 	today := time.Now().AddDate(0, 0, 1)
 	for i := 0; i < num; i++ {
@@ -133,7 +128,7 @@ func (its *EsClient) GenerateAllIndex() error {
 		tmp = append(tmp, target)
 	}
 	its.Index = tmp
-	err = its.IndexExists()
+	err := its.IndexExists()
 	if err != nil {
 		return err
 	}

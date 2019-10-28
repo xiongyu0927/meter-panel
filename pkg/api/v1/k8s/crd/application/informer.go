@@ -18,6 +18,8 @@ type AppInterface interface {
 	Get(name string, options metav1.GetOptions) (*Application, error)
 	Create(*Application) (*Application, error)
 	Watch(opts metav1.ListOptions) (watch.Interface, error)
+	Update(*Application) (*Application, error)
+	Delete(name string, options *metav1.DeleteOptions) error
 }
 
 type AppClient struct {
@@ -88,6 +90,28 @@ func (c *AppClient) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 		Resource("applications").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Watch()
+}
+
+func (c *AppClient) Update(app *Application) (result *Application, err error) {
+	result = &Application{}
+	err = c.restClient.Put().
+		Namespace(c.ns).
+		Resource("applications").
+		Name(app.Name).
+		Body(app).
+		Do().
+		Into(result)
+	return
+}
+
+func (c *AppClient) Delete(name string, options *metav1.DeleteOptions) error {
+	return c.restClient.Delete().
+		Namespace(c.ns).
+		Resource("applications").
+		Name(name).
+		Body(options).
+		Do().
+		Error()
 }
 
 func WatchResources(clientSet ApplicationInterface) cache.Store {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"meter-panel/tools"
-	"os"
 	"time"
 
 	"github.com/spf13/viper"
@@ -44,7 +43,7 @@ func (its *AllK8SConfigs) Update(cluster string) {
 
 // InitK8SCoinfg is used get a all k8s cluster config
 func InitK8SCoinfg() AllK8SConfigs {
-	furionhost := os.Getenv("FurionHost")
+	furionhost := viper.GetString("FURION_HOST")
 	if furionhost == "" {
 		log.Println("enviroment doesn't set, will use default config furion:8080")
 	} else {
@@ -95,8 +94,8 @@ func GenerateRestConfig(ep, tk string) *rest.Config {
 // LocalTest is local test
 func LocalTest() AllK8SConfigs {
 	cf := &rest.Config{
-		Host:            "https://129.28.147.60:6443",
-		BearerToken:     "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJjbHVzdGVycm9sZS1hZ2dyZWdhdGlvbi1jb250cm9sbGVyLXRva2VuLXA0ZndmIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImNsdXN0ZXJyb2xlLWFnZ3JlZ2F0aW9uLWNvbnRyb2xsZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiIzNjljMTU1ZC03NTU0LTExZTktYjFiNS01MjU0MDA1YzAyODEiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06Y2x1c3RlcnJvbGUtYWdncmVnYXRpb24tY29udHJvbGxlciJ9.Egx8MTAAwy0n9FGGDeI-36y7KUCsFcjQWI4cLfJbh3AlIhIswsZpbcf12bNUVUhD-3NsQuN93F-bwgDCr3Ft6-Je9t-ofnCfOIcEPDA-8xPJhbpNZcWYqJGSWZRlVgIEXMbbJNbZGJmgrJkBN6tkc30N0B2RjNE3j4qY-Q-vf1gLPBDk2H8FLGnFa9Iy1py0xvlnrkXyFuqzmjEEvgRmfIBCNn-4ImRFLuGlZsFSGqrlo-JzOWf5tKzfyxXfOKUfF4OOXAgnbPxeWqsxySyJN0rigaqQT_3kuxMmyEN3kAsVk5jgj9jEzyfPe4nX0PySV1N7AqqkrI2qQeSm5FopbQ",
+		Host:            "https://94.191.86.161:6443",
+		BearerToken:     "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRlZmF1bHQtdG9rZW4tamJsdDciLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGVmYXVsdCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjI4N2M4Yjg1LTc3YjItMTFlOS05YmU1LTUyNTQwMDU3NTRhOCIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmRlZmF1bHQifQ.e2r2hPC1P8NyAN28VhpthYCmZ1sOwGBLc-8j-szr0ISmfEWudEQ-kTuP0w4BmfS9DpE_6GjERzOzKgbncNpQc3CrFgqHokLXzB-YbZnrxWZG4DdEsrio6Jvx_yeLTzTnAEzKRKDpcRqPCpx0kQ4GtzoJWKoptBXrLuuYHi6fJ7KY4DlfYFxHB_zh2mW9OQKfvfBJgYmHzSSrlIpf6GZdtiMjKpC1R9OYic9YHaUGiLf7q-TiWyTtudN6m-U--bDzbyzFeoXyMdbvJX0sbDNE16nRtSP0feU9vsKqwjbENCmDm1IX3c5JeRjDEMgecAyCTw6RCaXL2Y0yYVlLvCSQeg",
 		Timeout:         time.Duration(10) * time.Second,
 		TLSClientConfig: rest.TLSClientConfig{Insecure: true},
 	}

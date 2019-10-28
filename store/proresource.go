@@ -2,10 +2,12 @@ package store
 
 import (
 	"log"
-	"os"
+	"strings"
 
 	"meter-panel/configs"
 	"meter-panel/tools"
+
+	"github.com/spf13/viper"
 )
 
 var ProRequest = tools.Request{
@@ -18,7 +20,7 @@ var ProRequest = tools.Request{
 }
 
 const (
-	cpuapi   string = "/api/v1/query?query=sum(100%20-%20(avg%20by%20(instance)%20(rate(node_cpu%7Bjob%3D%22node-exporter%22%2Cmode%3D%22idle%22%7D%5B5m%5D))%20*%20100))%20%2F%20count(node_cpu%7Bjob%3D%22node-exporter%22%2Cmode%3D%22idle%22%7D)"
+	cpuapi   string = "/api/v1/query?query=cluster_cpu_utilization%20%2F%20count(avg%20by(instance)(node_cpu%7Bjob%3D%22node-exporter%22%2Cmode%3D%22idle%22%7D))"
 	memapi   string = "/api/v1/query?query=((sum(node_memory_MemTotal)%20-%20sum(node_memory_MemFree)%20-%20sum(node_memory_Buffers)%20-%20sum(node_memory_Cached))%20%2F%20sum(node_memory_MemTotal))%20*%20100"
 	alertapi string = "/api/v1/query?query=ALERTS"
 )
@@ -55,8 +57,9 @@ func ListSingleClusterAlerts(address string) []byte {
 
 func GetProAddressFromEnv(K8sconfigs configs.AllK8SConfigs) map[string]string {
 	ProCfg := make(map[string]string)
-	for k, _ := range K8sconfigs {
-		tmp := os.Getenv(k + "Pro")
+	for k := range K8sconfigs {
+		c := strings.ToUpper(k)
+		tmp := viper.GetString(c + "PRO")
 		if tmp != "" {
 			ProCfg[k] = tmp
 		} else {

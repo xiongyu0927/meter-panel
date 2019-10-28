@@ -40,9 +40,13 @@ type EveryClusterDaemonSetLister map[string]lappv1.DaemonSetLister
 // EveryClusterStatefulSetLister is all cluster's statefulset lister
 type EveryClusterStatefulSetLister map[string]lappv1.StatefulSetLister
 
+type EveryClusterInformers map[string][]cache.SharedIndexInformer
+
+type EveryClusterStopper map[string]chan struct{}
+
 // AllLister is used to read k8s resuorce from local cache
 type AllLister struct {
-	clientset  map[string]*kubernetes.Clientset
+	ClientSet  map[string]*kubernetes.Clientset
 	PodLister  EveryClusterPodLister
 	NodeLister EveryClusterNodeLister
 	SvcLister  EveryClusterSvcLister
@@ -52,16 +56,19 @@ type AllLister struct {
 	DeploymentLister  EveryClusterDeploymentLister
 	DaemonSetLister   EveryClusterDaemonSetLister
 	StatefulSetLister EveryClusterStatefulSetLister
+	TheInformers      EveryClusterInformers
+	Stopper           EveryClusterStopper
 }
 
 // ResuorceLoad is padding AllLister.*Lister
 func (its *AllLister) ResuorceLoad() {
-	for k, v := range its.clientset {
+	for k, v := range its.ClientSet {
 		stopper := make(chan struct{})
 		factory := informers.NewSharedInformerFactory(v, 30)
 		ifs := its.RegisterInformorAndLister(factory, k)
 		defer runtime.HandleCrash()
 		go factory.Start(stopper)
+		its.Stopper[k] = stopper
 
 		for _, v := range ifs {
 			if !cache.WaitForCacheSync(stopper, v.HasSynced) {
@@ -101,6 +108,7 @@ func (its *AllLister) RegisterInformorAndLister(factory informers.SharedInformer
 	dpinformer := deploymentInformer.Informer()
 	dsinformer := daemonsetInformer.Informer()
 	ssinformer := statefulsetInforemer.Informer()
+	its.TheInformers[cluster] = append(its.TheInformers[cluster], dpinformer, ssinformer, sinformer)
 	tmp = append(tmp, pinformer, ninformer, sinformer, iinformer, pvinformer, dpinformer, dsinformer, ssinformer)
 	return tmp
 }
@@ -112,7 +120,7 @@ func NewAllLister(HAKC configs.AllK8SConfigs) *AllLister {
 		cs[k] = kubernetes.NewForConfigOrDie(v)
 	}
 	Al := &AllLister{
-		clientset:  cs,
+		ClientSet:  cs,
 		PodLister:  make(map[string]lcorev1.PodLister),
 		NodeLister: make(map[string]lcorev1.NodeLister),
 		SvcLister:  make(map[string]lcorev1.ServiceLister),
@@ -122,6 +130,8 @@ func NewAllLister(HAKC configs.AllK8SConfigs) *AllLister {
 		DeploymentLister:  make(map[string]lappv1.DeploymentLister),
 		DaemonSetLister:   make(map[string]lappv1.DaemonSetLister),
 		StatefulSetLister: make(map[string]lappv1.StatefulSetLister),
+		TheInformers:      make(map[string][]cache.SharedIndexInformer),
+		Stopper:           make(map[string]chan struct{}),
 	}
 	Al.ResuorceLoad()
 	return Al
