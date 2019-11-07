@@ -12,14 +12,19 @@ import (
 )
 
 func isNeedDoSomeThingA(m meta) bool {
-	if m.appname != "" && m.clustername != "" && m.or == nil {
+	_, ok := AllStore.ClientSet[m.clustername]
+
+	if m.appname != "" && m.or == nil && ok {
 		return true
 	}
 	return false
 }
 
 func isNeedDoSomeThingU(info1, info2 meta) bool {
-	if info1.appname != info2.appname {
+	_, ok := AllStore.ClientSet[info1.clustername]
+	_, ok2 := AllStore.ClientSet[info2.clustername]
+
+	if info1.appname != info2.appname && ok && ok2 {
 		return true
 	}
 
@@ -76,6 +81,11 @@ func (m *Models) avoidConflict(info meta) bool {
 }
 
 func isEmptyApplication(info meta) bool {
+	_, ok := AllStore.ClientSet[info.clustername]
+	if !ok {
+		return false
+	}
+
 	labelset := labels.Set(info.labels).AsSelector()
 	svc, err := AllLister.SvcLister[info.clustername].List(labelset)
 	if err != nil {
