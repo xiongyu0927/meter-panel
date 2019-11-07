@@ -123,22 +123,22 @@ func getStatefulSetMeta(sf *appsv1.StatefulSet) meta {
 	var app, cnm string
 
 	label := sf.GetLabels()
-	for k, v := range label {
-		if k == key {
-			ac := strings.SplitN(v, ".", -1)
-			if ac != nil && len(ac) == 2 {
-				if _, ok := AllStore.ClientSet[ac[1]]; ok {
-					cnm = ac[1]
-					app = ac[0]
-				}
-			}
+	v := label[key]
+	neededLabel := make(map[string]string)
+	neededLabel[key] = v
+
+	ac := strings.SplitN(v, ".", -1)
+	if ac != nil && len(ac) == 2 {
+		if _, ok := AllStore.ClientSet[ac[1]]; ok {
+			cnm = ac[1]
+			app = ac[0]
 		}
 	}
 
 	m := meta{
 		name:        sf.GetName(),
 		namespace:   sf.GetNamespace(),
-		labels:      label,
+		labels:      neededLabel,
 		or:          sf.GetOwnerReferences(),
 		appname:     app,
 		clustername: cnm,

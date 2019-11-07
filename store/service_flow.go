@@ -85,22 +85,22 @@ func getServiceMeta(svc *v1.Service) meta {
 	var app, cnm string
 
 	label := svc.GetLabels()
-	for k, v := range label {
-		if k == key {
-			ac := strings.SplitN(v, ".", -1)
-			if ac != nil && len(ac) == 2 {
-				if _, ok := AllStore.ClientSet[ac[1]]; ok {
-					cnm = ac[1]
-					app = ac[0]
-				}
-			}
+	v := label[key]
+	neededLabel := make(map[string]string)
+	neededLabel[key] = v
+
+	ac := strings.SplitN(v, ".", -1)
+	if ac != nil && len(ac) == 2 {
+		if _, ok := AllStore.ClientSet[ac[1]]; ok {
+			cnm = ac[1]
+			app = ac[0]
 		}
 	}
 
 	m := meta{
 		name:        svc.GetName(),
 		namespace:   svc.GetNamespace(),
-		labels:      label,
+		labels:      neededLabel,
 		or:          svc.GetOwnerReferences(),
 		appname:     app,
 		clustername: cnm,
