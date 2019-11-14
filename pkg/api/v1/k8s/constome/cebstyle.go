@@ -181,7 +181,8 @@ func (its *CebStyle) OrganizePvList(cluster string, Pvl []*v1.PersistentVolume) 
 		suffix = "Ki"
 		b = s / (1 << 10)
 	}
-	return fmt.Sprintf("%v%v", b, suffix)
+	result := fmt.Sprintf("%v%v", b, suffix)
+	return map[string]string{"result": result}
 }
 
 // OrganizeSvcList is .....
