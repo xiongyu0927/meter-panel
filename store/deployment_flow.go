@@ -85,9 +85,9 @@ func getDeploymentMeta(dep *appsv1.Deployment) meta {
 	var app, cnm string
 
 	label := dep.GetLabels()
-	v := label[key]
+	v := label[key2]
 	neededLabel := make(map[string]string)
-	neededLabel[key] = v
+	neededLabel[key2] = v
 
 	ac := strings.SplitN(v, ".", -1)
 	if ac != nil && len(ac) == 2 {
@@ -139,6 +139,7 @@ func (m *Models) updateDeploymentOR(info meta) {
 	} else {
 		dep.OwnerReferences = append(dep.OwnerReferences, this)
 	}
+	dep.Labels[key] = info.appname + "." + info.namespace
 	_, err = AllLister.ClientSet[info.clustername].AppsV1().Deployments(info.namespace).Update(dep)
 	if err != nil {
 		log.Println(err)

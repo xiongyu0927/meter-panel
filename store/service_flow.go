@@ -85,9 +85,9 @@ func getServiceMeta(svc *v1.Service) meta {
 	var app, cnm string
 
 	label := svc.GetLabels()
-	v := label[key]
+	v := label[key2]
 	neededLabel := make(map[string]string)
-	neededLabel[key] = v
+	neededLabel[key2] = v
 
 	ac := strings.SplitN(v, ".", -1)
 	if ac != nil && len(ac) == 2 {
@@ -139,6 +139,7 @@ func (m *Models) updateServiceOR(info meta) {
 	} else {
 		svc.OwnerReferences = append(svc.OwnerReferences, this)
 	}
+	svc.Labels[key] = info.appname + "." + info.namespace
 	_, err = AllLister.ClientSet[info.clustername].CoreV1().Services(info.namespace).Update(svc)
 	if err != nil {
 		log.Println(err)

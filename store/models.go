@@ -13,6 +13,7 @@ import (
 
 const (
 	key           string = "app.alauda.io/name"
+	key2          string = "app.cpaas.io/name"
 	appApiVersion string = "app.k8s.io/v1beta1"
 	appKind       string = "Application"
 	depGroup      string = "extensions"
@@ -21,7 +22,6 @@ const (
 	svcKind       string = "Service"
 	sfGroup       string = "app"
 	sfKind        string = "StatefulSet"
-	appLabelKey   string = "app.alauda.io/name"
 	appAnotation1 string = "app.alauda.io/create-method"
 	appAnotation2 string = "app.alauda.io/display-name"
 )

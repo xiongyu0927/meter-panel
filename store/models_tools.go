@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"meter-panel/pkg/api/v1/k8s/crd/application"
-	"strings"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -108,16 +107,15 @@ func isEmptyApplication(info meta) bool {
 }
 
 func newApplication(m meta) *application.Application {
-	ac := strings.SplitN(m.labels[key], ".", -1)
 	tmp := &application.Application{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       appKind,
 			APIVersion: appApiVersion,
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:        ac[0],
+			Name:        m.appname,
 			Namespace:   m.namespace,
-			Labels:      map[string]string{appLabelKey: ac[0]},
+			Labels:      map[string]string{key: m.appname},
 			Annotations: map[string]string{appAnotation1: "", appAnotation2: ""},
 		},
 		Spec: application.ApplicationSpec{
@@ -127,7 +125,7 @@ func newApplication(m meta) *application.Application {
 				metav1.GroupKind{Group: svcGroup, Kind: svcKind},
 			},
 			Selector: &metav1.LabelSelector{
-				MatchLabels: m.labels,
+				MatchLabels: map[string]string{key: m.appname + "." + m.namespace},
 			},
 		},
 	}

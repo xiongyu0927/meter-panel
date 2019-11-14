@@ -112,7 +112,7 @@ func (m *Models) updateStatefulSetOR(info meta) {
 	} else {
 		sf.OwnerReferences = append(sf.OwnerReferences, this)
 	}
-
+	sf.Labels[key] = info.appname + "." + info.namespace
 	AllLister.ClientSet[info.clustername].AppsV1().StatefulSets(info.namespace).Update(sf)
 	if err != nil {
 		log.Println(err)
@@ -123,9 +123,9 @@ func getStatefulSetMeta(sf *appsv1.StatefulSet) meta {
 	var app, cnm string
 
 	label := sf.GetLabels()
-	v := label[key]
+	v := label[key2]
 	neededLabel := make(map[string]string)
-	neededLabel[key] = v
+	neededLabel[key2] = v
 
 	ac := strings.SplitN(v, ".", -1)
 	if ac != nil && len(ac) == 2 {
