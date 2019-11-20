@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/labels"
 )
 
@@ -20,6 +21,8 @@ var RedisPoolConnectCount = prometheus.NewGaugeVec(
 	},
 	[]string{"pod_name", "pool_type", "data_type"},
 )
+
+var global string = viper.GetString("GLOBAL_CLUSTER_NAME")
 
 func init() {
 	cfg = LoadPoolConfig()
@@ -48,6 +51,7 @@ func Data() {
 				log.Println(err)
 			}
 			data := handleData(a)
+			RedisPoolConnectCount.Reset()
 			for k, v := range data {
 				if v[3] == 0 {
 					RedisPoolConnectCount.WithLabelValues(k, "all", "Current").Set(float64(v[0]))
@@ -90,7 +94,7 @@ func handleData(a string) map[string][]int {
 func paddingData(thistime map[string][]int) map[string][]int {
 	var tmp = make(map[string][]int)
 	var subtmp = make([]int, 4)
-	lister := store.AllLister.PodLister["ace"]
+	lister := store.AllLister.PodLister[global]
 	for _, v := range cfg.PoolSeting {
 		labelset := labels.Set(map[string]string{v[0]: v[1]}).AsSelector()
 		pl, err := lister.List(labelset)

@@ -13,5 +13,6 @@ func init() {
 	viper.SetDefault("TTL", 1)
 	viper.SetDefault("K8S_TIMEOUT", 60)
 	viper.SetDefault("FURION_HOST", "furion:8080")
+	viper.SetDefault("GLOBAL_CLUSTER_NAME", "ace")
 	viper.AutomaticEnv()
 }
