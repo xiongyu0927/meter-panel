@@ -25,7 +25,7 @@ const (
 )
 
 func ListSingleClusterCpu(address string) []byte {
-	ProRequest.Host = address + ":9090"
+	ProRequest.Host = address
 	ProRequest.Path = cpuapi
 	data, err := ProRequest.Get()
 	if err != nil {
@@ -35,7 +35,7 @@ func ListSingleClusterCpu(address string) []byte {
 }
 
 func ListSingleClusterMem(address string) []byte {
-	ProRequest.Host = address + ":9090"
+	ProRequest.Host = address
 	ProRequest.Path = memapi
 	data, err := ProRequest.Get()
 	if err != nil {
@@ -45,7 +45,7 @@ func ListSingleClusterMem(address string) []byte {
 }
 
 func ListSingleClusterAlerts(address string) []byte {
-	ProRequest.Host = address + ":9090"
+	ProRequest.Host = address
 	ProRequest.Path = alertapi
 	data, err := ProRequest.Get()
 	if err != nil {
