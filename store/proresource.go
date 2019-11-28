@@ -2,12 +2,11 @@ package store
 
 import (
 	"log"
+	"os"
 	"strings"
 
 	"meter-panel/configs"
 	"meter-panel/tools"
-
-	"github.com/spf13/viper"
 )
 
 var ProRequest = tools.Request{
@@ -58,8 +57,7 @@ func ListSingleClusterAlerts(address string) []byte {
 func GetProAddressFromEnv(K8sconfigs configs.AllK8SConfigs) map[string]string {
 	ProCfg := make(map[string]string)
 	for k := range K8sconfigs {
-		c := strings.ToUpper(k)
-		tmp := viper.GetString(c + "PRO")
+		tmp := ConvertClusterName(k)
 		if tmp != "" {
 			ProCfg[k] = tmp
 		} else {
@@ -69,4 +67,13 @@ func GetProAddressFromEnv(K8sconfigs configs.AllK8SConfigs) map[string]string {
 	}
 	ProUseEnv = true
 	return ProCfg
+}
+
+func ConvertClusterName(cluster string) string {
+	if strings.Contains(cluster, "-") {
+		cluster = strings.Replace(cluster, "-", "_", -1)
+	}
+
+	cluster = os.Getenv(strings.ToUpper(cluster) + "PRO")
+	return cluster
 }
