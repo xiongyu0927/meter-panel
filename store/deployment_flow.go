@@ -113,15 +113,14 @@ func getDeploymentMeta(dep *appsv1.Deployment) meta {
 
 func (m *Models) updateDeploymentOR(info meta) {
 	for i := 0; i < 3; i++ {
-		str := changeDeployment(info)
-		if !strings.Contains(str, modifiederr) {
-			log.Println("update deployment ownerreference succssed")
+		err := changeDeployment(info)
+		if err == nil {
 			break
 		}
 	}
 }
 
-func changeDeployment(info meta) string {
+func changeDeployment(info meta) error {
 	v, err := AllStore.ClientSet[info.clustername].App(info.namespace).Get(info.appname, metav1.GetOptions{})
 	if err != nil {
 		log.Println(err)
@@ -157,9 +156,8 @@ func changeDeployment(info meta) string {
 	_, err = AllLister.ClientSet[info.clustername].AppsV1().Deployments(info.namespace).Update(dep)
 	if err != nil {
 		log.Println(err)
-		str := fmt.Sprintf("%v", err)
-		return str
+		return err
 	}
 
-	return ""
+	return nil
 }
