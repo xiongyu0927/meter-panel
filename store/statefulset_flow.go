@@ -23,6 +23,7 @@ func (m *Models) AddStatefulSetFlow(sf *appsv1.StatefulSet) {
 			m.createApp(info)
 			m.updateStatefulSetOR(info)
 		} else {
+			updateApplication(info)
 			log.Println("update deployment" + info.name)
 			m.updateStatefulSetOR(info)
 		}
@@ -45,6 +46,7 @@ func (m *Models) UpdateStatefulSetFlow(sf1, sf2 *appsv1.StatefulSet) {
 			m.createApp(info2)
 			m.updateStatefulSetOR(info2)
 		} else {
+			updateApplication(info2)
 			m.updateStatefulSetOR(info2)
 		}
 
@@ -82,6 +84,16 @@ func (m *Models) DeleteStatefulSetFlow(sf *appsv1.StatefulSet) {
 }
 
 func (m *Models) updateStatefulSetOR(info meta) {
+	for i := 0; i < 3; i++ {
+		str := changeStatefulSet(info)
+		if !strings.Contains(str, modifiederr) {
+			log.Println("update deployment ownerreference succssed")
+			break
+		}
+	}
+}
+
+func changeStatefulSet(info meta) string {
 	v, err := AllStore.ClientSet[info.clustername].App(info.namespace).Get(info.appname, metav1.GetOptions{})
 	if err != nil {
 		log.Println(err)
@@ -113,10 +125,15 @@ func (m *Models) updateStatefulSetOR(info meta) {
 		sf.OwnerReferences = append(sf.OwnerReferences, this)
 	}
 	sf.Labels[key] = info.appname + "." + info.namespace
+	sf.Spec.Template.Labels[key] = info.appname + "." + info.namespace
 	AllLister.ClientSet[info.clustername].AppsV1().StatefulSets(info.namespace).Update(sf)
 	if err != nil {
 		log.Println(err)
+		str := fmt.Sprintf("%v", err)
+		return str
 	}
+
+	return ""
 }
 
 func getStatefulSetMeta(sf *appsv1.StatefulSet) meta {
@@ -142,6 +159,7 @@ func getStatefulSetMeta(sf *appsv1.StatefulSet) meta {
 		or:          sf.GetOwnerReferences(),
 		appname:     app,
 		clustername: cnm,
+		kind:        sfKind,
 	}
 	return m
 }

@@ -131,3 +131,30 @@ func newApplication(m meta) *application.Application {
 	}
 	return tmp
 }
+
+// 当我创建好应用后，appliction应该是三种资源都在group里，但是平台更新一次后，group里只会显示
+// 他找得到的那种资源，其他的会被删掉。所以当新增同一个Application下的其他类型资源后，我需要考虑
+// 这个Application是否已经被平台更新过了
+func updateApplication(m meta) {
+	app, err := AllStore.ClientSet[m.clustername].App(m.namespace).Get(m.appname, metav1.GetOptions{})
+	if err != nil {
+		log.Println(err)
+	}
+
+	for _, v := range app.Spec.ComponentGroupKinds {
+		if v.Kind == m.kind {
+			return
+		}
+	}
+
+	app.Spec.ComponentGroupKinds = []metav1.GroupKind{
+		metav1.GroupKind{Group: depGroup, Kind: depKind},
+		metav1.GroupKind{Group: sfGroup, Kind: sfKind},
+		metav1.GroupKind{Group: svcGroup, Kind: svcKind},
+	}
+
+	_, err = AllStore.ClientSet[m.clustername].App(m.namespace).Update(app)
+	if err != nil {
+		log.Println(err)
+	}
+}

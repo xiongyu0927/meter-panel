@@ -19,11 +19,12 @@ func (m *Models) AddDeploymentFlow(dep *appsv1.Deployment) {
 		str := fmt.Sprintf("applications.app.k8s.io \"%v\" not found", info.appname)
 		str2 := fmt.Sprintf("%v", err)
 		if str2 == str {
-			log.Println("create application" + info.name)
+			log.Println("create application " + info.name)
 			m.createApp(info)
 			m.updateDeploymentOR(info)
 		} else {
-			log.Println("update deployment" + info.name)
+			updateApplication(info)
+			log.Println("update deployment " + info.name)
 			m.updateDeploymentOR(info)
 		}
 	}
@@ -41,10 +42,11 @@ func (m *Models) UpdateDeploymentFlow(dep1, dep2 *appsv1.Deployment) {
 		str := fmt.Sprintf("applications.app.k8s.io \"%v\" not found", info2.appname)
 		str2 := fmt.Sprintf("%v", err)
 		if str2 == str {
-			log.Println("create application" + info2.appname)
+			log.Println("create application " + info2.appname)
 			m.createApp(info2)
 			m.updateDeploymentOR(info2)
 		} else {
+			updateApplication(info2)
 			m.updateDeploymentOR(info2)
 		}
 
@@ -104,11 +106,22 @@ func getDeploymentMeta(dep *appsv1.Deployment) meta {
 		or:          dep.GetOwnerReferences(),
 		appname:     app,
 		clustername: cnm,
+		kind:        depKind,
 	}
 	return m
 }
 
 func (m *Models) updateDeploymentOR(info meta) {
+	for i := 0; i < 3; i++ {
+		str := changeDeployment(info)
+		if !strings.Contains(str, modifiederr) {
+			log.Println("update deployment ownerreference succssed")
+			break
+		}
+	}
+}
+
+func changeDeployment(info meta) string {
 	v, err := AllStore.ClientSet[info.clustername].App(info.namespace).Get(info.appname, metav1.GetOptions{})
 	if err != nil {
 		log.Println(err)
@@ -140,8 +153,13 @@ func (m *Models) updateDeploymentOR(info meta) {
 		dep.OwnerReferences = append(dep.OwnerReferences, this)
 	}
 	dep.Labels[key] = info.appname + "." + info.namespace
+	dep.Spec.Template.Labels[key] = info.appname + "." + info.namespace
 	_, err = AllLister.ClientSet[info.clustername].AppsV1().Deployments(info.namespace).Update(dep)
 	if err != nil {
 		log.Println(err)
+		str := fmt.Sprintf("%v", err)
+		return str
 	}
+
+	return ""
 }

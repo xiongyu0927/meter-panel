@@ -23,6 +23,7 @@ func (m *Models) AddServiceFlow(svc *v1.Service) {
 			m.createApp(info)
 			m.updateServiceOR(info)
 		} else {
+			updateApplication(info)
 			log.Println("update deployment" + info.name)
 			m.updateServiceOR(info)
 		}
@@ -45,6 +46,7 @@ func (m *Models) UpdateServiceFlow(svc1, svc2 *v1.Service) {
 			m.createApp(info2)
 			m.updateServiceOR(info2)
 		} else {
+			updateApplication(info2)
 			m.updateServiceOR(info2)
 		}
 
@@ -104,11 +106,22 @@ func getServiceMeta(svc *v1.Service) meta {
 		or:          svc.GetOwnerReferences(),
 		appname:     app,
 		clustername: cnm,
+		kind:        svcKind,
 	}
 	return m
 }
 
 func (m *Models) updateServiceOR(info meta) {
+	for i := 0; i < 3; i++ {
+		str := changeService(info)
+		if !strings.Contains(str, modifiederr) {
+			log.Println("update deployment ownerreference succssed")
+			break
+		}
+	}
+}
+
+func changeService(info meta) string {
 	v, err := AllStore.ClientSet[info.clustername].App(info.namespace).Get(info.appname, metav1.GetOptions{})
 	if err != nil {
 		log.Println(err)
@@ -143,5 +156,9 @@ func (m *Models) updateServiceOR(info meta) {
 	_, err = AllLister.ClientSet[info.clustername].CoreV1().Services(info.namespace).Update(svc)
 	if err != nil {
 		log.Println(err)
+		str := fmt.Sprintf("%v", err)
+		return str
 	}
+
+	return ""
 }
