@@ -24,7 +24,7 @@ const (
 	sfKind        string = "StatefulSet"
 	appAnotation1 string = "app.alauda.io/create-method"
 	appAnotation2 string = "app.alauda.io/display-name"
-	modifiederr   string = "the object has been modified: please apply your change to the latest version and try again"
+	modifiederr   string = "the object has been modified; please apply your changes to the latest version and try again"
 )
 
 var ehf = cache.ResourceEventHandlerFuncs{
