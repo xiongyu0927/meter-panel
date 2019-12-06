@@ -63,7 +63,8 @@ func Data() {
 					RedisPoolConnectCount.WithLabelValues(k, "Write", "Total").Set(float64(v[3]))
 				}
 			}
-			time.Sleep(cfg.refresh_frequence)
+			// time.Sleep(cfg.refresh_frequence)
+			time.Sleep(15 * time.Second)
 		}
 	}()
 }

@@ -4,6 +4,7 @@ import (
 	"meter-panel/controllers"
 	_ "meter-panel/exporter"
 	"net/http"
+	"net/http/pprof"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -23,4 +24,9 @@ func init() {
 	Mux.HandleFunc("/api/v1/k8s/alerts", controllers.AlertViews)
 	Mux.HandleFunc("/api/v1/k8s/events", controllers.EventsViews)
 	Mux.Handle("/metrics", promhttp.Handler())
+	Mux.HandleFunc("/debug/pprof/", pprof.Index)
+	Mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	Mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	Mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	Mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 }

@@ -125,7 +125,7 @@ func WatchResources(clientSet ApplicationInterface) cache.Store {
 			},
 		},
 		&Application{},
-		1*time.Minute,
+		5*time.Minute,
 		cache.ResourceEventHandlerFuncs{},
 	)
 	stop := make(chan struct{})

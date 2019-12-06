@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"meter-panel/configs"
+	"time"
 
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/informers"
@@ -64,7 +65,7 @@ type AllLister struct {
 func (its *AllLister) ResuorceLoad() {
 	for k, v := range its.ClientSet {
 		stopper := make(chan struct{})
-		factory := informers.NewSharedInformerFactory(v, 30)
+		factory := informers.NewSharedInformerFactory(v, 5*time.Minute)
 		ifs := its.RegisterInformorAndLister(factory, k)
 		defer runtime.HandleCrash()
 		go factory.Start(stopper)

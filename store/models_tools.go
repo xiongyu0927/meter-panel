@@ -66,7 +66,7 @@ func (m *Models) avoidConflict(info meta) bool {
 			str2 := fmt.Sprintf("%v", err)
 			if str2 == str {
 				log.Println(info.appname + " is creating, waiting for it")
-				time.Sleep(time.Duration(1) * time.Second)
+				time.Sleep(1 * time.Second)
 				continue
 			}
 			return true
