@@ -14,6 +14,9 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
+// EverClusterNameSpaceLister is all clueter's namespace lister
+type EverClusterNameSpaceLister map[string]lcorev1.NamespaceLister
+
 // EveryClusterPodLister is all clueter's pod lister
 type EveryClusterPodLister map[string]lcorev1.PodLister
 
@@ -47,10 +50,11 @@ type EveryClusterStopper map[string]chan struct{}
 
 // AllLister is used to read k8s resuorce from local cache
 type AllLister struct {
-	ClientSet  map[string]*kubernetes.Clientset
-	PodLister  EveryClusterPodLister
-	NodeLister EveryClusterNodeLister
-	SvcLister  EveryClusterSvcLister
+	ClientSet       map[string]*kubernetes.Clientset
+	NameSpaceLister EverClusterNameSpaceLister
+	PodLister       EveryClusterPodLister
+	NodeLister      EveryClusterNodeLister
+	SvcLister       EveryClusterSvcLister
 	// EpLister      EveryClusterEpLister
 	IngressLister     EveryClusterIngressLister
 	PvLister          EveryClusterPvLister
@@ -82,6 +86,7 @@ func (its *AllLister) ResuorceLoad() {
 
 func (its *AllLister) RegisterInformorAndLister(factory informers.SharedInformerFactory, cluster string) []cache.SharedIndexInformer {
 	var tmp []cache.SharedIndexInformer
+	namespaceInformer := factory.Core().V1().Namespaces()
 	podInformer := factory.Core().V1().Pods()
 	nodeInformer := factory.Core().V1().Nodes()
 	serviceInformer := factory.Core().V1().Services()
@@ -91,6 +96,7 @@ func (its *AllLister) RegisterInformorAndLister(factory informers.SharedInformer
 	deploymentInformer := factory.Apps().V1().Deployments()
 	daemonsetInformer := factory.Apps().V1().DaemonSets()
 	statefulsetInforemer := factory.Apps().V1().StatefulSets()
+	its.NameSpaceLister[cluster] = namespaceInformer.Lister()
 	its.PodLister[cluster] = podInformer.Lister()
 	its.NodeLister[cluster] = nodeInformer.Lister()
 	its.SvcLister[cluster] = serviceInformer.Lister()
@@ -100,6 +106,7 @@ func (its *AllLister) RegisterInformorAndLister(factory informers.SharedInformer
 	its.DeploymentLister[cluster] = deploymentInformer.Lister()
 	its.DaemonSetLister[cluster] = daemonsetInformer.Lister()
 	its.StatefulSetLister[cluster] = statefulsetInforemer.Lister()
+	nsinformer := namespaceInformer.Informer()
 	pinformer := podInformer.Informer()
 	ninformer := nodeInformer.Informer()
 	sinformer := serviceInformer.Informer()
@@ -110,7 +117,7 @@ func (its *AllLister) RegisterInformorAndLister(factory informers.SharedInformer
 	dsinformer := daemonsetInformer.Informer()
 	ssinformer := statefulsetInforemer.Informer()
 	its.TheInformers[cluster] = append(its.TheInformers[cluster], dpinformer, ssinformer, sinformer)
-	tmp = append(tmp, pinformer, ninformer, sinformer, iinformer, pvinformer, dpinformer, dsinformer, ssinformer)
+	tmp = append(tmp, nsinformer, pinformer, ninformer, sinformer, iinformer, pvinformer, dpinformer, dsinformer, ssinformer)
 	return tmp
 }
 
@@ -121,10 +128,11 @@ func NewAllLister(HAKC configs.AllK8SConfigs) *AllLister {
 		cs[k] = kubernetes.NewForConfigOrDie(v)
 	}
 	Al := &AllLister{
-		ClientSet:  cs,
-		PodLister:  make(map[string]lcorev1.PodLister),
-		NodeLister: make(map[string]lcorev1.NodeLister),
-		SvcLister:  make(map[string]lcorev1.ServiceLister),
+		ClientSet:       cs,
+		NameSpaceLister: make(map[string]lcorev1.NamespaceLister),
+		PodLister:       make(map[string]lcorev1.PodLister),
+		NodeLister:      make(map[string]lcorev1.NodeLister),
+		SvcLister:       make(map[string]lcorev1.ServiceLister),
 		// EpLister:      make(map[string]lcorev1.EndpointsLister),
 		IngressLister:     make(map[string]v1beta1.IngressLister),
 		PvLister:          make(map[string]lcorev1.PersistentVolumeLister),

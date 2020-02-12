@@ -14,5 +14,6 @@ func init() {
 	viper.SetDefault("K8S_TIMEOUT", 60)
 	viper.SetDefault("FURION_HOST", "furion:8080")
 	viper.SetDefault("GLOBAL_CLUSTER_NAME", "ace")
+	viper.SetDefault("NSXT_GO_ENDPOINT", "http://nsxt-go:12500")
 	viper.AutomaticEnv()
 }

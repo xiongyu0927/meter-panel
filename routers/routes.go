@@ -23,6 +23,10 @@ func init() {
 	Mux.HandleFunc("/api/v1/k8s/mem", controllers.MemViews)
 	Mux.HandleFunc("/api/v1/k8s/alerts", controllers.AlertViews)
 	Mux.HandleFunc("/api/v1/k8s/events", controllers.EventsViews)
+	// doesn't need parmeter
+	Mux.HandleFunc("/api/v1/ceb/capacity", controllers.CapacityViews)
+	Mux.HandleFunc("/health", controllers.CapacityViews)
+	// Debug api
 	Mux.Handle("/metrics", promhttp.Handler())
 	Mux.HandleFunc("/debug/pprof/", pprof.Index)
 	Mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
