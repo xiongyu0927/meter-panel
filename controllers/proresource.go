@@ -34,7 +34,7 @@ func CpuViews(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Println(pl[0].Name)
-		tmp = store.ListSingleClusterCpu(pl[0].Status.PodIP + "9090")
+		tmp = store.ListSingleClusterCpu(pl[0].Status.PodIP + ":9090")
 	}
 	w.Write(tmp)
 	// fakedata := "{\"status\":\"success\",\"data\":{\"resultType\":\"vector\",\"result\":[{\"metric\":{},\"value\":[1564972370.447,\"0.5997867933742264\"]}]}}"
