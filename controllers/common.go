@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	capacity "meter-panel/capacity_report"
 	"meter-panel/pkg/api/v1/k8s/constome"
 	"net/http"
 )
@@ -18,6 +19,7 @@ const (
 
 func init() {
 	Style = constome.NewCebStyle()
+	capacity.Start()
 }
 
 func HealthViews(w http.ResponseWriter, r *http.Request) {
