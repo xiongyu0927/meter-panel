@@ -15,5 +15,6 @@ func init() {
 	viper.SetDefault("FURION_HOST", "furion:8080")
 	viper.SetDefault("GLOBAL_CLUSTER_NAME", "ace")
 	viper.SetDefault("NSXT_GO_ENDPOINT", "nsxt-go:12500")
+	viper.SetDefault("ENVIRONMENT_INFO", "as")
 	viper.AutomaticEnv()
 }

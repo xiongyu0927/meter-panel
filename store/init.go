@@ -19,10 +19,11 @@ var (
 	AllLister          *core.AllLister
 	AllStore           *crd.AllStore
 	ProUseEnv          bool
-	ProCfg             map[string]string
-	EsClient           *core.EsClient
-	Model              *Models
-	err                error
+	// key 是集群名，值是普罗米修斯的地址
+	ProCfg   map[string]string
+	EsClient *core.EsClient
+	Model    *Models
+	err      error
 )
 
 func init() {
@@ -37,7 +38,7 @@ func init() {
 		log.Println(err)
 	}
 	EsClient.Loop()
-	log.Println(EsClient.Data)
+	// log.Println(EsClient.Data)
 	log.Println("all resource of k8s, prometheus and es were init successed")
 }
 
