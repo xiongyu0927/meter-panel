@@ -26,6 +26,7 @@ type CebCacpityReport struct {
 	Environment string      `json:"environment"`
 	DataCenter  datacenter  `json:"dataCenter"`
 	Data        interface{} `json:"data"`
+	Date        string      `json:"date"`
 }
 
 type datacenter struct {
