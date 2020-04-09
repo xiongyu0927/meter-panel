@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/Shopify/sarama"
 	"github.com/robfig/cron"
@@ -20,7 +21,8 @@ var (
 	siteInfo string
 )
 
-type CebCacpityReport struct {
+// CebCapacityReport 容量报文结构体
+type CebCapacityReport struct {
 	// key is site
 	Kind        string      `json:"kind"`
 	Environment string      `json:"environment"`
@@ -34,7 +36,8 @@ type datacenter struct {
 	Name        string `json:"name"`
 }
 
-func NewCebCacpityReport(kind string) *CebCacpityReport {
+// NewCebCapacityReport 创建通用报文实体
+func NewCebCapacityReport(kind string) *CebCapacityReport {
 	var description, environment string
 	env := viper.GetString("ENVIRONMENT_INFO")
 	switch env {
@@ -55,9 +58,10 @@ func NewCebCacpityReport(kind string) *CebCacpityReport {
 		environment = "development"
 	}
 
-	return &CebCacpityReport{
+	return &CebCapacityReport{
 		Kind:        kind,
 		Environment: environment,
+		Date:        getDateYMD(),
 		DataCenter: datacenter{
 			Description: description,
 			Name:        env,
@@ -65,7 +69,7 @@ func NewCebCacpityReport(kind string) *CebCacpityReport {
 	}
 }
 
-func (r *CebCacpityReport) isYourSiteByClusterName(cluster string) bool {
+func (r *CebCapacityReport) isYourSiteByClusterName(cluster string) bool {
 	if r.DataCenter.Name == "s" {
 		return true
 	}
@@ -79,6 +83,7 @@ func (r *CebCacpityReport) isYourSiteByClusterName(cluster string) bool {
 	return false
 }
 
+//Start entrance
 func Start() {
 	c := cron.New()
 	spec := "0 0 18 * * *"
@@ -89,7 +94,7 @@ func Start() {
 	c.Start()
 }
 
-func transferData(data CebCacpityReport) {
+func transferData(data CebCapacityReport) {
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Partitioner = sarama.NewRandomPartitioner
@@ -128,4 +133,8 @@ func transferData(data CebCacpityReport) {
 		Value: reportData,
 	}
 	producer.Input() <- msg
+}
+
+func getDateYMD() string {
+	return time.Now().Format("2006-01-02")
 }

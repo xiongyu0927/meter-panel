@@ -44,14 +44,14 @@ func clusterScalReportStart() {
 	transferData(*data)
 }
 
-func GetClusterScalData() *CebCacpityReport {
-	report := NewCebCacpityReport("capacityData")
+func GetClusterScalData() *CebCapacityReport {
+	report := NewCebCapacityReport("capacityData")
 	cns, err := getClusterAndAllNamespaces()
 	if err != nil {
 		log.Println(err)
 		return nil
 	}
-	if err := report.getClusterScalCacpity(cns); err != nil {
+	if err := report.getClusterScalCapacity(cns); err != nil {
 		log.Println(err)
 		return nil
 	}
@@ -59,7 +59,7 @@ func GetClusterScalData() *CebCacpityReport {
 	return report
 }
 
-func (r *CebCacpityReport) getClusterScalCacpity(cns map[string][]string) error {
+func (r *CebCapacityReport) getClusterScalCapacity(cns map[string][]string) error {
 	var data clusterScalData
 	for k, v := range cns {
 		if r.isYourSiteByClusterName(k) {
